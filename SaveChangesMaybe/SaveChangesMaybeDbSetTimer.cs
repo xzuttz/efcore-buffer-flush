@@ -1,14 +1,10 @@
 ﻿using System.Timers;
 using Microsoft.EntityFrameworkCore;
+using SaveChangesMaybe.Extensions;
 using Z.BulkOperations;
 
 namespace SaveChangesMaybe
 {
-    public interface ISaveChangesMaybeDbSetTimer
-    {
-        void Start();
-    }
-
     public class SaveChangesMaybeDbSetTimer<T> : ISaveChangesMaybeDbSetTimer where T : class
     {
         public DbSet<T> DbSet { get; set; }
@@ -19,15 +15,15 @@ namespace SaveChangesMaybe
 
         private Action BulkOperationCallback { get; set; }
 
-        private System.Timers.Timer timer;
+        private readonly System.Timers.Timer _timer;
 
         public SaveChangesMaybeDbSetTimer(int timerInterval)
         {
-            timer = new System.Timers.Timer(timerInterval);
+            _timer = new System.Timers.Timer(timerInterval);
 
-            timer.Enabled = true;
+            _timer.Enabled = true;
 
-            timer.Elapsed += TimerOnElapsed;
+            _timer.Elapsed += TimerOnElapsed;
 
             switch (BulkOperationType)
             {
@@ -40,7 +36,6 @@ namespace SaveChangesMaybe
                     }
                     else
                     {
-                        //BulkOperationCallback = () => DbSet.SaveChangesMaybeFlushCache(BulkOperationOptions);
                         break;
                     }
                 }
@@ -59,7 +54,7 @@ namespace SaveChangesMaybe
 
         public void Start()
         {
-            timer.Start();
+            _timer.Start();
         }
     }
 }

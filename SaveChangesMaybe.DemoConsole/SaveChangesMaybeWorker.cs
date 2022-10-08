@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SaveChangesMaybe.DemoConsole.Models;
+using SaveChangesMaybe.Extensions;
 using Serilog;
 
 namespace SaveChangesMaybe.DemoConsole
@@ -36,6 +37,14 @@ namespace SaveChangesMaybe.DemoConsole
 
             var composer = fixture.Build<Course>();
 
+            var fixture2 = new Fixture();
+
+            fixture2.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
+                .ForEach(b => fixture.Behaviors.Remove(b));
+            fixture2.Behaviors.Add(new OmitOnRecursionBehavior());
+
+            var composer2 = fixture2.Build<Student>();
+
             int addedTimes = 0;
 
             while (true)
@@ -49,13 +58,15 @@ namespace SaveChangesMaybe.DemoConsole
 
                     Log.Logger.Debug($"Adding {courses.Count} courses.");
 
-                    _schoolCtx.Courses.BulkMergeMaybe(courses, 50);
+                    SaveCourses(courses); // Testing if the same call multiple times will result in 1 "group" iteration of the BulkOperation
 
-                    _schoolCtx.Courses.BulkMergeMaybe(courses, operation =>
-                    {
-                        operation.IgnoreColumnOutputNames = new List<string>();
-                    }, 
-                    batchSize: 50);
+                    var students = composer2.CreateMany(random).ToList();
+
+                    _schoolCtx.Students.BulkMergeMaybe(students, operation =>
+                        {
+                            operation.IgnoreColumnOutputNames = new List<string>();
+                        },
+                        batchSize: 50);
 
                     Thread.Sleep(1000);
 
@@ -64,9 +75,20 @@ namespace SaveChangesMaybe.DemoConsole
                 else
                 {
                     _logger.LogDebug($"Number of courses saved: {_schoolCtx.Courses.Count()}");
+                    _logger.LogDebug($"Number of students saved: {_schoolCtx.Students.Count()}");
+
                     Thread.Sleep(1000);
                 }
             }
+        }
+
+        private void SaveCourses(List<Course> courses)
+        {
+            _schoolCtx.Courses.BulkMergeMaybe(courses, operation =>
+                {
+                    operation.IgnoreColumnOutputNames = new List<string>();
+                },
+                batchSize: 50);
         }
 
         private void StartSaveChangesMaybeService()
