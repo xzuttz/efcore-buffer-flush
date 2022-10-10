@@ -48,3 +48,7 @@ The library offers a convenient method for adding the `ISaveChangesMaybeServiceF
 ```c#
 services.AddSaveChangesMaybeServiceFactory();
 ```
+
+# Example
+
+See the [Demo Console App](https://github.com/xzuttz/zzz-efplus-buffer-flush/tree/main/src/SaveChangesMaybe.DemoConsole)
