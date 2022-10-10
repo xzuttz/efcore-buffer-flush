@@ -1,7 +1,7 @@
 # What is Entity Framework Plus Buffer Flush 
 
 This is an extension to the Entity Framework Plus library, which can buffer changes locally, before persisting them in the database.
-Every EFPlus operation has a corresponding "Maybe" operation, which has a batch size. When the batch size is reached, the library will flush the internal cache and persist the changes. 
+Every EFPlus operation has a corresponding `Maybe` operation, which has a batch size. When the batch size is reached, the library will flush the internal cache and persist the changes. 
 
 # BulkMergeMaybe 
 
