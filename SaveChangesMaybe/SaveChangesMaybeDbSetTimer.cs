@@ -7,9 +7,9 @@ namespace SaveChangesMaybe
 {
     public class SaveChangesMaybeDbSetTimer<T> : ISaveChangesMaybeDbSetTimer where T : class
     {
-        public DbSet<T> DbSet { get; set; }
+        public DbSet<T> DbSetToFlush { get; set; }
 
-        public SaveChangesMaybeBulkOperationType BulkOperationType { get; set; }
+        public SaveChangesMaybeOperationType OperationType { get; set; }
 
         public Action<BulkOperation<T>> BulkOperationOptions { get; set; }
 
@@ -25,13 +25,15 @@ namespace SaveChangesMaybe
 
             _timer.Elapsed += TimerOnElapsed;
 
-            switch (BulkOperationType)
+            switch (OperationType)
             {
-                case SaveChangesMaybeBulkOperationType.BulkMerge:
+                case SaveChangesMaybeOperationType.BulkMerge:
                 {
                     if (BulkOperationOptions is null)
                     {
-                        BulkOperationCallback = () => DbSet.SaveChangesMaybeFlushBuffer(BulkOperationType);
+                        
+
+                        BulkOperationCallback = () => DbSetToFlush.FlushDbSetBuffer();
                         break;
                     }
                     else
@@ -40,7 +42,7 @@ namespace SaveChangesMaybe
                     }
                 }
 
-                case SaveChangesMaybeBulkOperationType.BulkMergeAsync:
+                case SaveChangesMaybeOperationType.BulkMergeAsync:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

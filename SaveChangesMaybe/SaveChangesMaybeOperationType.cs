@@ -1,6 +1,6 @@
 ﻿namespace SaveChangesMaybe
 {
-    public enum SaveChangesMaybeBulkOperationType
+    public enum SaveChangesMaybeOperationType
     {
         BulkMerge,
         BulkMergeAsync

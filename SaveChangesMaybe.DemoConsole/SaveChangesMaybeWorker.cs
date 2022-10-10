@@ -97,14 +97,14 @@ namespace SaveChangesMaybe.DemoConsole
 
             var schoolTimer = new SaveChangesMaybeDbSetTimer<Course>(1000)
             {
-                BulkOperationType = SaveChangesMaybeBulkOperationType.BulkMerge,
-                DbSet = _schoolCtx.Courses,
+                OperationType = SaveChangesMaybeOperationType.BulkMerge,
+                DbSetToFlush = _schoolCtx.Courses,
             };
 
             var schoolTimer2 = new SaveChangesMaybeDbSetTimer<Course>(1000)
             {
-                BulkOperationType = SaveChangesMaybeBulkOperationType.BulkMergeAsync,
-                DbSet = _schoolCtx.Courses,
+                OperationType = SaveChangesMaybeOperationType.BulkMergeAsync,
+                DbSetToFlush = _schoolCtx.Courses,
             };
 
             saveChangesMaybeService.AddTimer(schoolTimer);
