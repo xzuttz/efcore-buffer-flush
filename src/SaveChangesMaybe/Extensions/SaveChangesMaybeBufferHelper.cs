@@ -66,6 +66,7 @@ namespace SaveChangesMaybe.Extensions
 
         private static List<object> GetChangedEntities(string key)
         {
+            //var q = SaveChangesMaybeBufferBase<BufferDummy>.ChangedEntities["moo"];
             return ChangedEntities.ContainsKey(key) ? ChangedEntities[key] : new List<object>();
         }
 
@@ -109,28 +110,40 @@ namespace SaveChangesMaybe.Extensions
             ClearDbSetBufferMemory(dbSet.EntityType.Name);
         }
 
-        private static void SaveChanges<T>(DbSet<T> dbSetz, List<T> entities, SaveChangesMaybeOperationType operationType, Action<BulkOperation<T>>? options = null) where T : class
+        private static void SaveChanges<T>(DbSet<T> dbSet, List<T> entities, SaveChangesMaybeOperationType operationType, Action<BulkOperation<T>>? options = null) where T : class
         {
             if (entities.Any())
             {
-                Log.Logger.Debug($"Saving {entities.Count} {dbSetz.GetType()}");
+                Log.Logger.Debug($"Saving {entities.Count} {dbSet.GetType()}");
 
                 switch (operationType)
                 {
                     case SaveChangesMaybeOperationType.BulkMerge:
                     case SaveChangesMaybeOperationType.BulkMergeAsync:
                         {
-
                             if (options is null)
                             {
-                                dbSetz.BulkMerge(entities);
+                                dbSet.BulkMerge(entities);
                             }
                             else
                             {
-                                dbSetz.BulkMerge(entities, options);
+                                dbSet.BulkMerge(entities, options);
                             }
                             break;
                         }
+                    case SaveChangesMaybeOperationType.BulkUpdate:
+                    case SaveChangesMaybeOperationType.BulkUpdateAsync:
+                    {
+                        if (options is null)
+                        {
+                            dbSet.BulkUpdate(entities);
+                        }
+                        else
+                        {
+                            dbSet.BulkUpdate(entities, options);
+                        }
+                        break;
+                    }
                     default:
                         throw new ArgumentOutOfRangeException(nameof(operationType), operationType, null);
                 }

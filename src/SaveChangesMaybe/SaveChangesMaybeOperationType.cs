@@ -3,6 +3,8 @@
     public enum SaveChangesMaybeOperationType
     {
         BulkMerge,
-        BulkMergeAsync
+        BulkMergeAsync,
+        BulkUpdate,
+        BulkUpdateAsync
     }
 }
