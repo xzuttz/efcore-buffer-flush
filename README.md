@@ -16,6 +16,10 @@ _schoolCtx.Students.BulkMergeMaybe(students,
 
 # Flushing the cache in a fixed time interval
 
+The cache should be flushed every now and then. 
+
+Create a `SaveChangesMaybeDbSetTimer` for every DbSet and add it to the `SaveChangesMaybeService`.
+
 ```c#
 public void ConfigureDbSetFlushIntervals(ISaveChangesMaybeServiceFactory maybeServiceFactory, SchoolContext schoolCtx)
 {
@@ -39,7 +43,7 @@ public void ConfigureDbSetFlushIntervals(ISaveChangesMaybeServiceFactory maybeSe
 ``` 
 # Dependenecy Injection
 
-The library offers a convention method for adding the `ISaveChangesMaybeServiceFactory` to the IoC provider.
+The library offers a convenient method for adding the `ISaveChangesMaybeServiceFactory` to the IoC provider.
 
 ```c#
 services.AddSaveChangesMaybeServiceFactory();
