@@ -7,7 +7,6 @@ using SaveChangesMaybe;
 using SaveChangesMaybe.DemoConsole;
 using SaveChangesMaybe.DemoConsole.Models;
 using Serilog;
-using Serilog.Events;
 
 CreateLogger();
 var host = CreateHost();
@@ -25,8 +24,7 @@ static IHost CreateHost()
 static void CreateLogger()
 {
     Log.Logger = new LoggerConfiguration()
-        .MinimumLevel.Debug()
-        .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+        .MinimumLevel.Information()
         .Enrich.FromLogContext()
         .WriteTo.Console()
         .CreateLogger();
@@ -43,5 +41,3 @@ static void ConfigureApplicationServices(HostBuilderContext context, IServiceCol
 
     services.AddSaveChangesMaybeServiceFactory();
 }
-
-

@@ -56,26 +56,26 @@ namespace SaveChangesMaybe.DemoConsole
 
                     var courses = composer.CreateMany(random).ToList();
 
-                    Log.Logger.Debug($"Adding {courses.Count} courses.");
+                    _logger.LogInformation($"Adding {courses.Count} courses.");
 
                     SaveCourses(courses); // Testing if the same call multiple times will result in 1 "group" iteration of the BulkOperation
 
                     var students = composer2.CreateMany(random).ToList();
 
+                    _logger.LogInformation($"Adding {students.Count} students.");
+
                     _schoolCtx.Students.BulkMergeMaybe(students, operation =>
                         {
                             operation.IgnoreColumnOutputNames = new List<string>();
                         },
-                        batchSize: 50);
-
-                    Thread.Sleep(1000);
+                        batchSize: 5000);
 
                     addedTimes++;
                 }
                 else
                 {
-                    _logger.LogDebug($"Number of courses saved: {_schoolCtx.Courses.Count()}");
-                    _logger.LogDebug($"Number of students saved: {_schoolCtx.Students.Count()}");
+                    _logger.LogError($"Number of courses saved: {_schoolCtx.Courses.Count()}");
+                    _logger.LogError($"Number of students saved: {_schoolCtx.Students.Count()}");
 
                     Thread.Sleep(1000);
                 }
@@ -88,23 +88,21 @@ namespace SaveChangesMaybe.DemoConsole
                 {
                     operation.IgnoreColumnOutputNames = new List<string>();
                 },
-                batchSize: 50);
+                batchSize: 5000);
         }
 
         private void StartSaveChangesMaybeService()
         {
             var saveChangesMaybeService = _maybeServiceFactory.CreateSaveChangesMaybeService();
 
-            var schoolTimer = new SaveChangesMaybeDbSetTimer<Course>(1000)
+            var schoolTimer = new SaveChangesMaybeDbSetTimer<Course>(5000)
             {
-                OperationType = SaveChangesMaybeOperationType.BulkMerge,
                 DbSetToFlush = _schoolCtx.Courses,
             };
 
-            var schoolTimer2 = new SaveChangesMaybeDbSetTimer<Course>(1000)
+            var schoolTimer2 = new SaveChangesMaybeDbSetTimer<Student>(1000)
             {
-                OperationType = SaveChangesMaybeOperationType.BulkMergeAsync,
-                DbSetToFlush = _schoolCtx.Courses,
+                DbSetToFlush = _schoolCtx.Students,
             };
 
             saveChangesMaybeService.AddTimer(schoolTimer);

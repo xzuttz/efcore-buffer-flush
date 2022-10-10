@@ -9,8 +9,6 @@ namespace SaveChangesMaybe
     {
         public DbSet<T> DbSetToFlush { get; set; }
 
-        public SaveChangesMaybeOperationType OperationType { get; set; }
-
         public Action<BulkOperation<T>> BulkOperationOptions { get; set; }
 
         private Action BulkOperationCallback { get; set; }
@@ -21,32 +19,9 @@ namespace SaveChangesMaybe
         {
             _timer = new System.Timers.Timer(timerInterval);
 
-            _timer.Enabled = true;
-
             _timer.Elapsed += TimerOnElapsed;
 
-            switch (OperationType)
-            {
-                case SaveChangesMaybeOperationType.BulkMerge:
-                {
-                    if (BulkOperationOptions is null)
-                    {
-                        
-
-                        BulkOperationCallback = () => DbSetToFlush.FlushDbSetBuffer();
-                        break;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-
-                case SaveChangesMaybeOperationType.BulkMergeAsync:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            BulkOperationCallback = () => DbSetToFlush.FlushDbSetBuffer();
         }
 
         private void TimerOnElapsed(object? sender, ElapsedEventArgs e)

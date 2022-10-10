@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32120.378
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaveChangesMaybe.Tests", "tests\SaveChangesMaybe.Tests\SaveChangesMaybe.Tests.csproj", "{427ABD55-953B-40FD-B064-5311498A14E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaveChangesMaybe.Tests", "SaveChangesMaybe.Tests\SaveChangesMaybe.Tests.csproj", "{427ABD55-953B-40FD-B064-5311498A14E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveChangesMaybe.DemoConsole", "src\SaveChangesMaybe.DemoConsole\SaveChangesMaybe.DemoConsole.csproj", "{B40B2609-0B6C-4DAF-9D5F-836AE72CBA67}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveChangesMaybe.DemoConsole", "SaveChangesMaybe.DemoConsole\SaveChangesMaybe.DemoConsole.csproj", "{B40B2609-0B6C-4DAF-9D5F-836AE72CBA67}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveChangesMaybe", "src\SaveChangesMaybe\SaveChangesMaybe.csproj", "{EE90F31A-BBC5-48B2-B526-F4033DC855DA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveChangesMaybe", "SaveChangesMaybe\SaveChangesMaybe.csproj", "{EE90F31A-BBC5-48B2-B526-F4033DC855DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
