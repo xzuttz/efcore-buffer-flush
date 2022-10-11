@@ -3,7 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SaveChangesMaybe.DemoConsole.Models;
 using SaveChangesMaybe.Extensions;
-using Serilog;
+using Z.BulkOperations;
 
 namespace SaveChangesMaybe.DemoConsole
 {
@@ -64,11 +64,22 @@ namespace SaveChangesMaybe.DemoConsole
 
                     _logger.LogInformation($"Adding {students.Count} students.");
 
-                    _schoolCtx.Students.BulkMergeMaybe(students, operation =>
-                        {
+                    Action<BulkOperation<Student>> optionsCallback = static (opts) =>
+                    {
+                        opts.IncludeGraph = false;
+                    };
+
+                    var students2 = composer2.CreateMany(random).ToList();
+
+                    // Testing calling BulkMerge directly on context and DbSet
+
+                    _schoolCtx.Students.BulkMergeMaybe(students2, operation =>
+                    {
                             operation.IgnoreColumnOutputNames = new List<string>();
-                        },
-                        batchSize: 5000);
+                    },
+                    batchSize: 5000);
+
+                    _schoolCtx.BulkMergeMaybe(students, batchSize: 5000, optionsCallback);
 
                     addedTimes++;
                 }
@@ -95,7 +106,7 @@ namespace SaveChangesMaybe.DemoConsole
         {
             var saveChangesMaybeService = _maybeServiceFactory.CreateSaveChangesMaybeService();
 
-            var schoolTimer = new SaveChangesMaybeDbSetTimer<Course>(5000)
+            var schoolTimer = new SaveChangesMaybeDbSetTimer<Course>(1000)
             {
                 DbSetToFlush = _schoolCtx.Courses,
             };
