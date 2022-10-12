@@ -1,33 +1,30 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Serilog;
+﻿using Serilog;
 using Z.BulkOperations;
 
 namespace SaveChangesMaybe.Extensions.Common
 {
     internal static class SaveChangesMaybeBufferHelperDbContext
     {
-        internal static void SaveChangesMaybe<T>(this DbContext dbContext, List<T> entities, int batchSize, SaveChangesMaybeOperationType operationType, Action<BulkOperation<T>>? options = null) where T : class
+        internal static void SaveChangesMaybe<T>(SaveChangesMaybeWrapper<T> wrapper) where T : class
         {
             lock (SaveChangesMaybeBufferHelperDbSet.PadLock)
             {
                 // Find all entries for the DBSet
 
-                var key = typeof(T).ToString();
-
-                var changedEntities = GetChangedEntities(key);
+                var changedEntities = GetChangedEntities(wrapper.DbSetType);
 
                 if (!changedEntities.Any())
                 {
-                    SaveChangesMaybeBufferHelperDbSet.ChangedEntities[key] = changedEntities;
+                    SaveChangesMaybeBufferHelperDbSet.ChangedEntities[wrapper.DbSetType] = changedEntities;
                 }
 
                 var bufferWithOptions = new SaveChangesBuffer<T>()
                 {
-                    Options = options,
-                    OperationType = operationType
+                    Options = wrapper.Options,
+                    OperationType = wrapper.OperationType
                 };
 
-                foreach (var entity in entities)
+                foreach (var entity in wrapper.Entities)
                 {
                     bufferWithOptions.Entities.Add(entity);
                 }
@@ -39,11 +36,11 @@ namespace SaveChangesMaybe.Extensions.Common
 
                 var changeCount = all.Sum(withOptions => withOptions.Entities.Count);
 
-                if (changeCount > batchSize)
+                if (changeCount >= wrapper.BatchSize)
                 {
                     Log.Logger.Debug("Batch size exceeded");
 
-                    FlushDbSetBufferAndClearMemory(dbContext, all);
+                    FlushDbSetBufferAndClearMemory(wrapper, all);
                 }
             }
         }
@@ -61,7 +58,7 @@ namespace SaveChangesMaybe.Extensions.Common
             }
         }
 
-        private static void FlushDbSetBufferAndClearMemory<T>(DbContext dbContext, List<SaveChangesBuffer<T>> all) where T : class
+        private static void FlushDbSetBufferAndClearMemory<T>(SaveChangesMaybeWrapper<T> wrapper, List<SaveChangesBuffer<T>> all) where T : class
         {
             // Group changes first by operation type, then by options, and persist
 
@@ -86,52 +83,20 @@ namespace SaveChangesMaybe.Extensions.Common
 
                     var operationTypeGroup = operationEnumerator.Current.Key;
 
-                    SaveChanges(dbContext, allChangesByOptions, operationTypeGroup, optionGroup);
+                    SaveChanges(wrapper, allChangesByOptions, operationTypeGroup, optionGroup);
                 }
             }
-
-            var type = dbContext.GetType();
 
             ClearDbSetBufferMemory(typeof(T).ToString());
         }
 
-        private static void SaveChanges<T>(DbContext dbContext, List<T> entities, SaveChangesMaybeOperationType operationType, Action<BulkOperation<T>>? options = null) where T : class
+        private static void SaveChanges<T>(SaveChangesMaybeWrapper<T> wrapper, List<T> entities, SaveChangesMaybeOperationType operationType, Action<BulkOperation<T>>? options = null) where T : class
         {
             if (entities.Any())
             {
-                Log.Logger.Debug($"Saving {entities.Count} {dbContext.GetType()}");
+                Log.Logger.Debug($"Saving {entities.Count} {wrapper.DbSetType}");
 
-                switch (operationType)
-                {
-                    case SaveChangesMaybeOperationType.BulkMerge:
-                    case SaveChangesMaybeOperationType.BulkMergeAsync:
-                        {
-                            if (options is null)
-                            {
-                                dbContext.BulkMerge(entities);
-                            }
-                            else
-                            {
-                                dbContext.BulkMerge(entities, options);
-                            }
-                            break;
-                        }
-                    case SaveChangesMaybeOperationType.BulkUpdate:
-                    case SaveChangesMaybeOperationType.BulkUpdateAsync:
-                        {
-                            if (options is null)
-                            {
-                                dbContext.BulkUpdate(entities);
-                            }
-                            else
-                            {
-                                dbContext.BulkUpdate(entities, options);
-                            }
-                            break;
-                        }
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(operationType), operationType, null);
-                }
+                wrapper.SaveChangesCallback.Invoke(entities);
             }
             else
             {

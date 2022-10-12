@@ -56,7 +56,7 @@ namespace SaveChangesMaybe.DemoConsole
 
                     var courses = composer.CreateMany(random).ToList();
 
-                    _logger.LogInformation($"Adding {courses.Count} courses.");
+                    //_logger.LogInformation($"Adding {courses.Count} courses.");
 
                     SaveCourses(courses); // Testing if the same call multiple times will result in 1 "group" iteration of the BulkOperation
 
@@ -66,20 +66,17 @@ namespace SaveChangesMaybe.DemoConsole
 
                     Action<BulkOperation<Student>> optionsCallback = static (opts) =>
                     {
-                        opts.IncludeGraph = false;
+                        opts.IgnoreColumnOutputNames = new List<string>();
+                        opts.AllowDuplicateKeys = true;
                     };
 
                     var students2 = composer2.CreateMany(random).ToList();
 
                     // Testing calling BulkMerge directly on context and DbSet
 
-                    _schoolCtx.Students.BulkMergeMaybe(students2, operation =>
-                    {
-                            operation.IgnoreColumnOutputNames = new List<string>();
-                    },
-                    batchSize: 5000);
+                    _schoolCtx.Students.BulkMergeMaybe(students2, optionsCallback, batchSize: 50);
 
-                    _schoolCtx.BulkMergeMaybe(students, batchSize: 5000, optionsCallback);
+                    _schoolCtx.BulkMergeMaybe(students, batchSize: 50, optionsCallback);
 
                     addedTimes++;
                 }
@@ -97,7 +94,7 @@ namespace SaveChangesMaybe.DemoConsole
         {
             _schoolCtx.Courses.BulkMergeMaybe(courses, operation =>
                 {
-                    operation.IgnoreColumnOutputNames = new List<string>();
+                    operation.AllowDuplicateKeys = true;
                 },
                 batchSize: 5000);
         }

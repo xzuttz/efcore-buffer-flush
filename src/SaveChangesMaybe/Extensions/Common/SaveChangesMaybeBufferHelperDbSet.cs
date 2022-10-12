@@ -41,7 +41,7 @@ namespace SaveChangesMaybe.Extensions.Common
 
                 var changeCount = all.Sum(withOptions => withOptions.Entities.Count);
 
-                if (changeCount > batchSize)
+                if (changeCount >= batchSize)
                 {
                     Log.Logger.Debug("Batch size exceeded");
 

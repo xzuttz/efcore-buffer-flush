@@ -22,4 +22,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SaveChangesMaybe.DemoConsole\SaveChangesMaybe.DemoConsole.csproj" />
+    <ProjectReference Include="..\..\src\SaveChangesMaybe\SaveChangesMaybe.csproj" />
+  </ItemGroup>
+
 </Project>
