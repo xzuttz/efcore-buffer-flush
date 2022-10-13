@@ -1,7 +1,5 @@
-using System;
 using System.Linq;
 using AutoFixture;
-using Microsoft.EntityFrameworkCore;
 using SaveChangesMaybe.DemoConsole.Models;
 using SaveChangesMaybe.Extensions;
 using Xunit;
@@ -41,11 +39,11 @@ namespace SaveChangesMaybe.Tests
 
                     var courses = composer.CreateMany(numberOfCoursesToAdd).ToList();
 
-                    schoolContext.Courses.BulkMergeMaybe(courses, operation =>
+                    schoolContext.Courses.BulkMergeMaybe(courses, batchSize: 60,
+                        operation =>
                         {
                             operation.AllowDuplicateKeys = true;
-                        },
-                    batchSize: 60);
+                        });
 
                     addedCourses += numberOfCoursesToAdd;
                     addedTimes++;
@@ -79,11 +77,11 @@ namespace SaveChangesMaybe.Tests
 
                     var courses = composer.CreateMany(numberOfCoursesToAdd).ToList();
 
-                    schoolContext.Courses.BulkMergeMaybe(courses, operation =>
+                    schoolContext.Courses.BulkMergeMaybe(courses, batchSize: 50,
+                        operation =>
                         {
                             operation.AllowDuplicateKeys = true;
-                        },
-                        batchSize: 50);
+                        });
 
                     addedCourses += numberOfCoursesToAdd;
                     addedTimes++;
@@ -117,11 +115,11 @@ namespace SaveChangesMaybe.Tests
 
                     var courses = composer.CreateMany(numberOfCoursesToAdd).ToList();
 
-                    schoolContext.Courses.BulkMergeMaybe(courses, operation =>
+                    schoolContext.Courses.BulkMergeMaybe(courses, batchSize: 60, 
+                        operation =>
                         {
                             operation.AllowDuplicateKeys = true;
-                        },
-                        batchSize: 60);
+                        });
 
                     addedCourses += numberOfCoursesToAdd;
                     addedTimes++;

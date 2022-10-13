@@ -118,7 +118,6 @@ namespace SaveChangesMaybe.Extensions.Common
                 switch (operationType)
                 {
                     case SaveChangesMaybeOperationType.BulkMerge:
-                    case SaveChangesMaybeOperationType.BulkMergeAsync:
                         {
                             if (options is null)
                             {
@@ -131,7 +130,6 @@ namespace SaveChangesMaybe.Extensions.Common
                             break;
                         }
                     case SaveChangesMaybeOperationType.BulkUpdate:
-                    case SaveChangesMaybeOperationType.BulkUpdateAsync:
                     {
                         if (options is null)
                         {

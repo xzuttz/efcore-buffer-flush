@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using AutoFixture;
-using Microsoft.EntityFrameworkCore;
 using SaveChangesMaybe.DemoConsole.Models;
 using SaveChangesMaybe.Extensions;
 using Xunit;

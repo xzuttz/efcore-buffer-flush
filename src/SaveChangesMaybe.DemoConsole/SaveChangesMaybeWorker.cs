@@ -74,7 +74,7 @@ namespace SaveChangesMaybe.DemoConsole
 
                     // Testing calling BulkMerge directly on context and DbSet
 
-                    _schoolCtx.Students.BulkMergeMaybe(students2, optionsCallback, batchSize: 50);
+                    _schoolCtx.Students.BulkMergeMaybe(students2, batchSize: 50, optionsCallback);
 
                     _schoolCtx.BulkMergeMaybe(students, batchSize: 50, optionsCallback);
 
@@ -92,11 +92,11 @@ namespace SaveChangesMaybe.DemoConsole
 
         private void SaveCourses(List<Course> courses)
         {
-            _schoolCtx.Courses.BulkMergeMaybe(courses, operation =>
+            _schoolCtx.Courses.BulkMergeMaybe(courses, batchSize: 5000,
+                operation =>
                 {
                     operation.AllowDuplicateKeys = true;
-                },
-                batchSize: 5000);
+                });
         }
 
         private void StartSaveChangesMaybeService()
