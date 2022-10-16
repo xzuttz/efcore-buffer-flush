@@ -1,6 +1,6 @@
 ﻿using System.Timers;
 using Microsoft.EntityFrameworkCore;
-using SaveChangesMaybe.Extensions.Common;
+using SaveChangesMaybe.Core;
 using SaveChangesMaybe.Models;
 
 namespace SaveChangesMaybe
@@ -19,7 +19,7 @@ namespace SaveChangesMaybe
 
             var wrapper = new SaveChangesMaybeWrapper<T>();
 
-            BulkOperationCallback = () => SaveChangesMaybeBufferHelperDbSet.FlushDbSetBuffer(wrapper);
+            BulkOperationCallback = () => SaveChangesMaybeBufferHelper.FlushDbSetBuffer(wrapper);
         }
 
         private void TimerOnElapsed(object? sender, ElapsedEventArgs e)

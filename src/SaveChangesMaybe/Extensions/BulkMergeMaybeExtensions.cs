@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SaveChangesMaybe.Extensions.Common;
+using SaveChangesMaybe.Core;
 using SaveChangesMaybe.Models;
 using Z.BulkOperations;
 
@@ -43,7 +43,7 @@ namespace SaveChangesMaybe.Extensions
                 Options = options
             };
 
-            SaveChangesMaybeBufferHelperDbContext.SaveChangesMaybe(wrapper);
+            SaveChangesMaybeBufferHelper.SaveChangesMaybe(wrapper);
         }
 
         // DbSet
@@ -82,7 +82,7 @@ namespace SaveChangesMaybe.Extensions
                 Options = options
             };
 
-            SaveChangesMaybeBufferHelperDbSet.SaveChangesMaybe(wrapper);
+            SaveChangesMaybeBufferHelper.SaveChangesMaybe(wrapper);
         }
     }
 }

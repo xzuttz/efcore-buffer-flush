@@ -1,11 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SaveChangesMaybe.Models;
+﻿using SaveChangesMaybe.Models;
 using Serilog;
-using Z.BulkOperations;
 
-namespace SaveChangesMaybe.Extensions.Common
+namespace SaveChangesMaybe.Core
 {
-    internal static class SaveChangesMaybeBufferHelperDbSet
+    internal static class SaveChangesMaybeBufferHelper
     {
         internal static Dictionary<string, List<object>> ChangedEntities { get; } = new();
 
