@@ -4,5 +4,6 @@
     {
         BulkMerge,
         BulkUpdate,
+        BulkInsert
     }
 }
