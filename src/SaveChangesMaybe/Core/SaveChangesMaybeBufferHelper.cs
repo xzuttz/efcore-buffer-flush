@@ -1,5 +1,7 @@
-﻿using SaveChangesMaybe.Models;
+﻿using System.Diagnostics;
+using SaveChangesMaybe.Models;
 using Serilog;
+using Serilog.Core;
 
 namespace SaveChangesMaybe.Core
 {
@@ -107,27 +109,24 @@ namespace SaveChangesMaybe.Core
 
                     // Save changes
 
-                    // If callback on wrapper is null, the call is from the fixed SaveChangesMaybeDbSetTimer. In this case, pick the first CallBack from any of the entities in the list, as they are in the same operation group, the same callback applies.
+                    // If callback on wrapper is null, the call is from the fixed SaveChangesMaybeDbSetTimer. In this case, pick the first CallBack from any of the entities in the list, as they are in the same operation and options group, the same callback applies.
 
-                    if (wrapper.SaveChangesCallback is null)
-                    {
-                        wrapper.SaveChangesCallback = optionsEnumerator.Current.First().SaveChangesCallback;
-                    }
+                    var callBack = optionsEnumerator.Current.First().SaveChangesCallback;
 
-                    SaveChanges(wrapper, allChangesByOptions);
+                    Debug.WriteLine(optionsEnumerator.Current.First().OperationType);
+
+                    SaveChanges(callBack, allChangesByOptions);
                 }
             }
 
             ClearDbSetBufferMemory(wrapper.DbSetType);
         }
 
-        private static void SaveChanges<T>(SaveChangesMaybeWrapper<T> wrapper, List<T> entities) where T : class
+        private static void SaveChanges<T>(Action<List<T>> callBack, List<T> entities) where T : class
         {
             if (entities.Any())
             {
-                Log.Logger.Debug($"Saving {entities.Count} {wrapper.DbSetType}");
-
-                wrapper.SaveChangesCallback.Invoke(entities);
+                callBack.Invoke(entities);
             }
             else
             {
