@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using AutoFixture;
+using SaveChangesMaybe.Core;
 using SaveChangesMaybe.DemoConsole.Models;
 using SaveChangesMaybe.Extensions;
 using Xunit;
@@ -7,17 +8,11 @@ using Xunit.Abstractions;
 
 namespace SaveChangesMaybe.Tests
 {
-    public class DbContextTests
+    public partial class DbSetTests
     {
-        private readonly ITestOutputHelper _testOutputHelper;
-
-        public DbContextTests(ITestOutputHelper testOutputHelper)
-        {
-            _testOutputHelper = testOutputHelper;
-        }
 
         [Fact]
-        public void BulkMerge_CalledOnce_NotExceedingBatchSize_ZeroChanges()
+        public void DbContext_BulkMerge_CalledOnce_NotExceedingBatchSize_ZeroChanges()
         {
             using (var schoolContext = new SchoolContext(SchoolContextHelper.CreateNewContextOptions()))
             {
@@ -50,11 +45,13 @@ namespace SaveChangesMaybe.Tests
                 }
 
                 Assert.Equal(0, schoolContext.Courses.Count());
+
+                SaveChangesMaybeBufferHelper.FlushCache();
             }
         }
 
         [Fact]
-        public void BulkMerge_CalledTwice_ExceededBatchSizeTwice_100Changes()
+        public void DbContext_BulkMerge_CalledTwice_ExceededBatchSizeTwice_100Changes()
         {
             using (var schoolContext = new SchoolContext(SchoolContextHelper.CreateNewContextOptions()))
             {
@@ -76,7 +73,7 @@ namespace SaveChangesMaybe.Tests
 
                     var courses = composer.CreateMany(numberOfCoursesToAdd).ToList();
 
-                    schoolContext.BulkMergeMaybe(courses, batchSize:50, operation =>
+                    schoolContext.BulkMergeMaybe(courses, batchSize: 50, operation =>
                     {
                         operation.AllowDuplicateKeys = true;
                     });
@@ -87,11 +84,14 @@ namespace SaveChangesMaybe.Tests
                 }
 
                 Assert.Equal(addedCourses, schoolContext.Courses.Count());
+
+                SaveChangesMaybeBufferHelper.FlushCache();
+
             }
         }
 
         [Fact]
-        public void BulkMerge_CalledTwice_ExceededBatchSizeOnce_100Changes()
+        public void DbContext_BulkMerge_CalledTwice_ExceededBatchSizeOnce_100Changes()
         {
             using (var schoolContext = new SchoolContext(SchoolContextHelper.CreateNewContextOptions()))
             {
@@ -124,6 +124,8 @@ namespace SaveChangesMaybe.Tests
                 }
 
                 Assert.Equal(100, schoolContext.Courses.Count());
+
+                SaveChangesMaybeBufferHelper.FlushCache();
             }
         }
     }

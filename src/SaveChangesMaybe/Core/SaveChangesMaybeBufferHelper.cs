@@ -3,7 +3,7 @@ using Serilog;
 
 namespace SaveChangesMaybe.Core
 {
-    internal static class SaveChangesMaybeBufferHelper
+    public static class SaveChangesMaybeBufferHelper
     {
         internal static Dictionary<string, List<object>> ChangedEntities { get; } = new();
 
@@ -60,6 +60,14 @@ namespace SaveChangesMaybe.Core
                 {
                     FlushDbSetBufferAndClearMemory(wrapper, changedEntities.ToList());
                 }
+            }
+        }
+
+        public static void FlushCache()
+        {
+            lock (PadLock)
+            {
+                ChangedEntities.Clear();
             }
         }
 

@@ -1,5 +1,6 @@
 using System.Linq;
 using AutoFixture;
+using SaveChangesMaybe.Core;
 using SaveChangesMaybe.DemoConsole.Models;
 using SaveChangesMaybe.Extensions;
 using Xunit;
@@ -7,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace SaveChangesMaybe.Tests
 {
-    public class DbSetTests
+    public partial class DbSetTests
     {
         private readonly ITestOutputHelper _testOutputHelper;
 
@@ -17,7 +18,7 @@ namespace SaveChangesMaybe.Tests
         }
 
         [Fact]
-        public void BulkMerge_CalledOnce_NotExceedingBatchSize_ZeroChanges()
+        public void DbSet_BulkMerge_CalledOnce_NotExceedingBatchSize_ZeroChanges()
         {
             using (var schoolContext = new SchoolContext(SchoolContextHelper.CreateNewContextOptions()))
             {
@@ -51,11 +52,13 @@ namespace SaveChangesMaybe.Tests
                 }
 
                 Assert.Equal(0, schoolContext.Courses.Count());
+
+                SaveChangesMaybeBufferHelper.FlushCache();
             }
         }
 
         [Fact]
-        public void BulkMerge_CalledTwice_ExceededBatchSizeTwice_100Changes()
+        public void DbSet_BulkMerge_CalledTwice_ExceededBatchSizeTwice_100Changes()
         {
             using (var schoolContext = new SchoolContext(SchoolContextHelper.CreateNewContextOptions()))
             {
@@ -89,11 +92,13 @@ namespace SaveChangesMaybe.Tests
                 }
 
                 Assert.Equal(addedCourses, schoolContext.Courses.Count());
+
+                SaveChangesMaybeBufferHelper.FlushCache();
             }
         }
 
         [Fact]
-        public void BulkMerge_CalledTwice_ExceededBatchSizeOnce_100Changes()
+        public void DbSet_BulkMerge_CalledTwice_ExceededBatchSizeOnce_100Changes()
         {
             using (var schoolContext = new SchoolContext(SchoolContextHelper.CreateNewContextOptions()))
             {
@@ -127,6 +132,9 @@ namespace SaveChangesMaybe.Tests
                 }
 
                 Assert.Equal(100, schoolContext.Courses.Count());
+
+                SaveChangesMaybeBufferHelper.FlushCache();
+
             }
         }
     }
