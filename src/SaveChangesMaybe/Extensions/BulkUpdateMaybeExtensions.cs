@@ -26,11 +26,11 @@ namespace SaveChangesMaybe.Extensions
             {
                 if (options is null)
                 {
-                    dbContext.BulkMerge(list);
+                    dbContext.BulkUpdate(list);
                 }
                 else
                 {
-                    dbContext.BulkMerge(list, options);
+                    dbContext.BulkUpdate(list, options);
                 }
             });
 
@@ -39,13 +39,12 @@ namespace SaveChangesMaybe.Extensions
                 SaveChangesCallback = callback,
                 BatchSize = batchSize,
                 Entities = entities,
-                OperationType = SaveChangesMaybeOperationType.BulkMerge,
+                OperationType = SaveChangesMaybeOperationType.BulkUpdate,
                 Options = options
             };
 
             SaveChangesMaybeBufferHelper.SaveChangesMaybe(wrapper);
         }
-
 
         // DbSet
 
@@ -79,7 +78,7 @@ namespace SaveChangesMaybe.Extensions
                 SaveChangesCallback = callback,
                 BatchSize = batchSize,
                 Entities = entities,
-                OperationType = SaveChangesMaybeOperationType.BulkMerge,
+                OperationType = SaveChangesMaybeOperationType.BulkUpdate,
                 Options = options
             };
 
