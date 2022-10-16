@@ -7,8 +7,6 @@ namespace SaveChangesMaybe
 {
     public class SaveChangesMaybeDbSetTimer<T> : ISaveChangesMaybeDbSetTimer where T : class
     {
-        public DbSet<T> DbSetToFlush { get; set; }
-
         private Action BulkOperationCallback { get; set; }
 
         private readonly System.Timers.Timer _timer;
@@ -19,10 +17,7 @@ namespace SaveChangesMaybe
 
             _timer.Elapsed += TimerOnElapsed;
 
-            var wrapper = new SaveChangesMaybeWrapper<T>
-            {
-                
-            };
+            var wrapper = new SaveChangesMaybeWrapper<T>();
 
             BulkOperationCallback = () => SaveChangesMaybeBufferHelperDbSet.FlushDbSetBuffer(wrapper);
         }

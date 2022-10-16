@@ -103,15 +103,9 @@ namespace SaveChangesMaybe.DemoConsole
         {
             var saveChangesMaybeService = _maybeServiceFactory.CreateSaveChangesMaybeService();
 
-            var schoolTimer = new SaveChangesMaybeDbSetTimer<Course>(1000)
-            {
-                DbSetToFlush = _schoolCtx.Courses,
-            };
+            var schoolTimer = new SaveChangesMaybeDbSetTimer<Course>(1000);
 
-            var studentsTimer = new SaveChangesMaybeDbSetTimer<Student>(1000)
-            {
-                DbSetToFlush = _schoolCtx.Students,
-            };
+            var studentsTimer = new SaveChangesMaybeDbSetTimer<Student>(1000);
 
             saveChangesMaybeService.AddTimer(schoolTimer);
             saveChangesMaybeService.AddTimer(studentsTimer);

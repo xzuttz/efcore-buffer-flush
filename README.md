@@ -25,15 +25,9 @@ public void ConfigureDbSetFlushIntervals(ISaveChangesMaybeServiceFactory maybeSe
 {
     var saveChangesMaybeService = maybeServiceFactory.CreateSaveChangesMaybeService();
 
-    var courseTimer = new SaveChangesMaybeDbSetTimer<Course>(5000)
-    {
-        DbSetToFlush = schoolCtx.Courses,
-    };
+    var courseTimer = new SaveChangesMaybeDbSetTimer<Course>(5000);
 
-    var studentTimer = new SaveChangesMaybeDbSetTimer<Student>(1000)
-    {
-        DbSetToFlush = schoolCtx.Students,
-    };
+    var studentTimer = new SaveChangesMaybeDbSetTimer<Student>(1000);
 
     saveChangesMaybeService.AddTimer(courseTimer);
     saveChangesMaybeService.AddTimer(studentTimer);
