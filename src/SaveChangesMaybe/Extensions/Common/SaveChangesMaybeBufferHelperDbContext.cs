@@ -1,5 +1,5 @@
-﻿using Serilog;
-using Z.BulkOperations;
+﻿using SaveChangesMaybe.Models;
+using Serilog;
 
 namespace SaveChangesMaybe.Extensions.Common
 {
@@ -21,7 +21,8 @@ namespace SaveChangesMaybe.Extensions.Common
                 var bufferWithOptions = new SaveChangesBuffer<T>()
                 {
                     Options = wrapper.Options,
-                    OperationType = wrapper.OperationType
+                    OperationType = wrapper.OperationType,
+                    SaveChangesCallback = wrapper.SaveChangesCallback
                 };
 
                 foreach (var entity in wrapper.Entities)
@@ -76,21 +77,25 @@ namespace SaveChangesMaybe.Extensions.Common
 
                 while (optionsEnumerator.MoveNext())
                 {
-                    var optionGroup = optionsEnumerator.Current.Key;
                     var allChangesByOptions = optionsEnumerator.Current.ToList().SelectMany(x => x.Entities).Cast<T>().ToList();
 
                     // Save changes
 
-                    var operationTypeGroup = operationEnumerator.Current.Key;
+                    // If callback on wrapper is null, the call is from the fixed SaveChangesMaybeDbSetTimer. In this case, pick the first CallBack from any of the entities in the list, as they are in the same operation group, the same callback applies.
 
-                    SaveChanges(wrapper, allChangesByOptions, operationTypeGroup, optionGroup);
+                    if (wrapper.SaveChangesCallback is null)
+                    {
+                        wrapper.SaveChangesCallback = optionsEnumerator.Current.First().SaveChangesCallback;
+                    }
+
+                    SaveChanges(wrapper, allChangesByOptions);
                 }
             }
 
-            ClearDbSetBufferMemory(typeof(T).ToString());
+            ClearDbSetBufferMemory(wrapper.DbSetType);
         }
 
-        private static void SaveChanges<T>(SaveChangesMaybeWrapper<T> wrapper, List<T> entities, SaveChangesMaybeOperationType operationType, Action<BulkOperation<T>>? options = null) where T : class
+        private static void SaveChanges<T>(SaveChangesMaybeWrapper<T> wrapper, List<T> entities) where T : class
         {
             if (entities.Any())
             {

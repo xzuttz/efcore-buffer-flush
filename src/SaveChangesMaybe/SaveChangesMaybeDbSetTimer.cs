@@ -1,16 +1,13 @@
 ﻿using System.Timers;
 using Microsoft.EntityFrameworkCore;
-using SaveChangesMaybe.Extensions;
 using SaveChangesMaybe.Extensions.Common;
-using Z.BulkOperations;
+using SaveChangesMaybe.Models;
 
 namespace SaveChangesMaybe
 {
     public class SaveChangesMaybeDbSetTimer<T> : ISaveChangesMaybeDbSetTimer where T : class
     {
         public DbSet<T> DbSetToFlush { get; set; }
-
-        public Action<BulkOperation<T>> BulkOperationOptions { get; set; }
 
         private Action BulkOperationCallback { get; set; }
 
@@ -22,7 +19,12 @@ namespace SaveChangesMaybe
 
             _timer.Elapsed += TimerOnElapsed;
 
-            BulkOperationCallback = () => DbSetToFlush.FlushDbSetBuffer();
+            var wrapper = new SaveChangesMaybeWrapper<T>
+            {
+                
+            };
+
+            BulkOperationCallback = () => SaveChangesMaybeBufferHelperDbSet.FlushDbSetBuffer(wrapper);
         }
 
         private void TimerOnElapsed(object? sender, ElapsedEventArgs e)

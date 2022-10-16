@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SaveChangesMaybe.Models;
 using Serilog;
 using Z.BulkOperations;
 
@@ -10,26 +11,27 @@ namespace SaveChangesMaybe.Extensions.Common
 
         internal static readonly object PadLock = new();
 
-        internal static void SaveChangesMaybe<T>(this DbSet<T> dbSet, List<T> entities, int batchSize, SaveChangesMaybeOperationType operationType, Action<BulkOperation<T>>? options = null) where T : class
+        internal static void SaveChangesMaybe<T>(SaveChangesMaybeWrapper<T> wrapper) where T : class
         {
             lock (PadLock)
             {
                 // Find all entries for the DBSet
 
-                var changedEntities = GetChangedEntities(dbSet.EntityType.Name);
+                var changedEntities = GetChangedEntities(wrapper.DbSetType);
 
                 if (!changedEntities.Any())
                 {
-                    ChangedEntities[dbSet.EntityType.Name] = changedEntities;
+                    ChangedEntities[wrapper.DbSetType] = changedEntities;
                 }
 
                 var bufferWithOptions = new SaveChangesBuffer<T>()
                 {
-                    Options = options,
-                    OperationType = operationType
+                    Options = wrapper.Options,
+                    OperationType = wrapper.OperationType,
+                    SaveChangesCallback = wrapper.SaveChangesCallback
                 };
 
-                foreach (var entity in entities)
+                foreach (var entity in wrapper.Entities)
                 {
                     bufferWithOptions.Entities.Add(entity);
                 }
@@ -41,24 +43,24 @@ namespace SaveChangesMaybe.Extensions.Common
 
                 var changeCount = all.Sum(withOptions => withOptions.Entities.Count);
 
-                if (changeCount >= batchSize)
+                if (changeCount >= wrapper.BatchSize)
                 {
                     Log.Logger.Debug("Batch size exceeded");
 
-                    FlushDbSetBufferAndClearMemory(dbSet, all);
+                    FlushDbSetBufferAndClearMemory(wrapper, all);
                 }
             }
         }
 
-        internal static void FlushDbSetBuffer<T>(this DbSet<T> dbSet) where T : class
+        internal static void FlushDbSetBuffer<T>(SaveChangesMaybeWrapper<T> wrapper) where T : class
         {
             lock (PadLock)
             {
-                var changedEntities = GetChangedEntities(dbSet.EntityType.Name).Cast<SaveChangesBuffer<T>>().ToList();
+                var changedEntities = GetChangedEntities(wrapper.DbSetType).Cast<SaveChangesBuffer<T>>().ToList();
 
                 if (changedEntities.Any())
                 {
-                    FlushDbSetBufferAndClearMemory(dbSet, changedEntities.ToList());
+                    FlushDbSetBufferAndClearMemory(wrapper, changedEntities.ToList());
                 }
             }
         }
@@ -77,7 +79,7 @@ namespace SaveChangesMaybe.Extensions.Common
             }
         }
 
-        private static void FlushDbSetBufferAndClearMemory<T>(DbSet<T> dbSet, List<SaveChangesBuffer<T>> all) where T : class
+        private static void FlushDbSetBufferAndClearMemory<T>(SaveChangesMaybeWrapper<T> wrapper, List<SaveChangesBuffer<T>> all) where T : class
         {
             // Group changes first by operation type, then by options, and persist
 
@@ -95,55 +97,31 @@ namespace SaveChangesMaybe.Extensions.Common
 
                 while (optionsEnumerator.MoveNext())
                 {
-                    var optionGroup = optionsEnumerator.Current.Key;
                     var allChangesByOptions = optionsEnumerator.Current.ToList().SelectMany(x => x.Entities).Cast<T>().ToList();
 
                     // Save changes
 
-                    var operationTypeGroup = operationEnumerator.Current.Key;
+                    // If callback on wrapper is null, the call is from the fixed SaveChangesMaybeDbSetTimer. In this case, pick the first CallBack from any of the entities in the list, as they are in the same operation group, the same callback applies.
 
-                    SaveChanges(dbSet, allChangesByOptions, operationTypeGroup, optionGroup);
+                    if (wrapper.SaveChangesCallback is null)
+                    {
+                        wrapper.SaveChangesCallback = optionsEnumerator.Current.First().SaveChangesCallback;
+                    }
+
+                    SaveChanges(wrapper, allChangesByOptions);
                 }
             }
 
-            ClearDbSetBufferMemory(dbSet.EntityType.Name);
+            ClearDbSetBufferMemory(wrapper.DbSetType);
         }
 
-        private static void SaveChanges<T>(DbSet<T> dbSet, List<T> entities, SaveChangesMaybeOperationType operationType, Action<BulkOperation<T>>? options = null) where T : class
+        private static void SaveChanges<T>(SaveChangesMaybeWrapper<T> wrapper, List<T> entities) where T : class
         {
             if (entities.Any())
             {
-                Log.Logger.Debug($"Saving {entities.Count} {dbSet.GetType()}");
+                Log.Logger.Debug($"Saving {entities.Count} {wrapper.DbSetType}");
 
-                switch (operationType)
-                {
-                    case SaveChangesMaybeOperationType.BulkMerge:
-                        {
-                            if (options is null)
-                            {
-                                dbSet.BulkMerge(entities);
-                            }
-                            else
-                            {
-                                dbSet.BulkMerge(entities, options);
-                            }
-                            break;
-                        }
-                    case SaveChangesMaybeOperationType.BulkUpdate:
-                    {
-                        if (options is null)
-                        {
-                            dbSet.BulkUpdate(entities);
-                        }
-                        else
-                        {
-                            dbSet.BulkUpdate(entities, options);
-                        }
-                        break;
-                    }
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(operationType), operationType, null);
-                }
+                wrapper.SaveChangesCallback.Invoke(entities);
             }
             else
             {

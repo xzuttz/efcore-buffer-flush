@@ -108,13 +108,13 @@ namespace SaveChangesMaybe.DemoConsole
                 DbSetToFlush = _schoolCtx.Courses,
             };
 
-            var schoolTimer2 = new SaveChangesMaybeDbSetTimer<Student>(1000)
+            var studentsTimer = new SaveChangesMaybeDbSetTimer<Student>(1000)
             {
                 DbSetToFlush = _schoolCtx.Students,
             };
 
             saveChangesMaybeService.AddTimer(schoolTimer);
-            saveChangesMaybeService.AddTimer(schoolTimer2);
+            saveChangesMaybeService.AddTimer(studentsTimer);
 
             saveChangesMaybeService.Start();
         }

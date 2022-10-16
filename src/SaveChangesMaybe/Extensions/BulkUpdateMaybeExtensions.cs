@@ -1,20 +1,47 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SaveChangesMaybe.Extensions.Common;
+using SaveChangesMaybe.Models;
 using Z.BulkOperations;
 
 namespace SaveChangesMaybe.Extensions
 {
     public static class BulkUpdateMaybeExtensions
     {
-        public static Task BulkUpdateMaybeAsync<T>(this DbSet<T> dbSet, List<T> entities, int batchSize, Action<BulkOperation<T>>? options = null) where T : class
+        public static async Task BulkUpdateMaybeAsync<T>(this DbSet<T> dbSet, List<T> entities, int batchSize, CancellationToken cancellationToken, Action<BulkOperation<T>>? options = null) where T : class
         {
-            dbSet.SaveChangesMaybe(entities, batchSize, SaveChangesMaybeOperationType.BulkUpdate, options);
-            return Task.FromResult(Task.CompletedTask);
+            /// TODO: async all the way down
+
+            await Task.Run(() =>
+            {
+                BulkUpdateMaybe<T>(dbSet, entities, batchSize, options);
+            }, cancellationToken).ConfigureAwait(false);
         }
 
-        public static void BulkUpdateMaybe<T>(this DbSet<T> dbSet, List<T> entities, Action<BulkOperation<T>> options, int batchSize) where T : class
+        public static void BulkUpdateMaybe<T>(this DbSet<T> dbSet, List<T> entities, int batchSize, Action<BulkOperation<T>>? options = null) where T : class
         {
-            dbSet.SaveChangesMaybe(entities, batchSize, SaveChangesMaybeOperationType.BulkUpdate, options);
+
+            var callback = new Action<List<T>>(list =>
+            {
+                if (options is null)
+                {
+                    dbSet.BulkUpdate(list);
+                }
+                else
+                {
+                    dbSet.BulkUpdate(list, options);
+                }
+            });
+
+            var wrapper = new SaveChangesMaybeWrapper<T>
+            {
+                SaveChangesCallback = callback,
+                BatchSize = batchSize,
+                Entities = entities,
+                OperationType = SaveChangesMaybeOperationType.BulkMerge,
+                Options = options
+            };
+
+            SaveChangesMaybeBufferHelperDbSet.SaveChangesMaybe(wrapper);
         }
     }
 }
