@@ -5,10 +5,10 @@ Every bulk operation has a corresponding `Maybe` operation, which has a batch si
 
 # Currently supported operations
 
-| Operations     |
-| ---------------|
-|BulkMerge       |
-|BulkUpdate      |
+| Operations          |
+| --------------------|
+|BulkMergeMaybe       |
+|BulkUpdateMaybe      |
 
 # BulkMergeMaybe example
 
@@ -20,6 +20,10 @@ _schoolCtx.Students.BulkMergeMaybe(students,
     },
     batchSize: 5000);
 ``` 
+
+# Additional information
+
+The `Maybe` operations in this library use an internal buffer to store entities, until the buffer has reached its limit, or until the buffer is flushed by the timer. The buffer will not be used or flushed when calling any of the original non-`Maybe`-functions of the ZZZ library, as they do not know about the buffer. If you first use BulkMergeMaybe and then the original BulkMerge afterwards, the entities from BulkMergeMaybe will not be taken into account. The `Maybe` operations reuse all of the existing functionality of the ZZZ library, it acts as a proxy, just with an internal buffer and logic to determine when to flush it.
 
 # Flushing the cache in a fixed time interval
 
