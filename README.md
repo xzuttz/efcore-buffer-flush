@@ -5,7 +5,7 @@ Every bulk operation has a corresponding `Maybe` operation, which has a batch si
 
 # Additional information
 
-The `Maybe` operations in this library use an internal buffer to store entities, until the buffer has reached its limit, or until the buffer is flushed by the timer. The buffer will not be used or flushed when calling any of the original non-`Maybe`-functions of the ZZZ library, as they do not know about the buffer. If you first use BulkMergeMaybe and then the original BulkMerge afterwards, the entities from BulkMergeMaybe will not be taken into account. The `Maybe` operations reuse all of the existing functionality of the ZZZ library, they act as a proxy, just with an internal buffer and logic to determine when to flush it.
+The `Maybe` operations in this library use an internal buffer to store entities, until the buffer has reached its limit, or until the buffer is flushed by the timer. The buffer will not be used or flushed when calling any of the original non-`Maybe`-functions of the ZZZ library, as they do not know about the buffer. If you first use BulkMergeMaybe and then the original BulkMerge afterwards, the entities from BulkMergeMaybe will not be taken into account. The `Maybe` operations reuse all of the existing functionality of the ZZZ library, they act as a wrapper, just with an internal buffer and logic to determine when to flush it.
 
 The library has only been tested in a single-threaded environment. The shared buffer is static and might not work as expected in mutli-threaded environment such as ASP.NET application that recieves multiple concurrent requests. However, you are welcome to try it out and see if it fits your needs.
 
