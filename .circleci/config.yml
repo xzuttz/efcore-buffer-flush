@@ -25,12 +25,12 @@ jobs:
           command: ls
 
       - run:
-          working_directory: ~/tests/
+          working_directory: ~/project/tests/
           name: List working directory files
           command: ls
 
       - run:
-          working_directory: ~/tests/SaveChangesMaybe.Tests/
+          working_directory:  ~/project/tests/SaveChangesMaybe.Tests/
           name: List working directory files
           command: ls
 
