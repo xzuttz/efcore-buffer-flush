@@ -36,7 +36,7 @@ jobs:
 
       - run:
           # Update this line with the directory that contains your tests project file
-          working_directory: ~/tests/SaveChangesMaybe.Tests/
+          working_directory: ~/project/tests/SaveChangesMaybe.Tests/
           name: Run tests
           command: |
             dotnet test
