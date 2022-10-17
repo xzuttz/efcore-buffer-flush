@@ -9,6 +9,10 @@ The `Maybe` operations in this library use an internal buffer to store entities,
 
 The library has only been tested in a single-threaded environment. The shared buffer is static and might not work as expected in mutli-threaded environment such as ASP.NET application that recieves multiple concurrent requests. However, you are welcome to try it out and see if it fits your needs.
 
+# CircleCI
+
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/xzuttz/zzz-efplus-buffer-flush/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/xzuttz/zzz-efplus-buffer-flush/tree/main)
+
 # Supported operations
 
 | Operations          |
