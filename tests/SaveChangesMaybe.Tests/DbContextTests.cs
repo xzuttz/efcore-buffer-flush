@@ -10,11 +10,10 @@ namespace SaveChangesMaybe.Tests
 {
     public partial class DbSetTests
     {
-
         [Fact]
         public void DbContext_BulkMerge_CalledOnce_NotExceedingBatchSize_ZeroChanges()
         {
-            using (var schoolContext = new SchoolContext(SchoolContextHelper.CreateNewContextOptions()))
+            using (var schoolContext = TestWithSqlite.CreateSchoolContext())
             {
                 var fixture = new Fixture();
 
@@ -53,7 +52,7 @@ namespace SaveChangesMaybe.Tests
         [Fact]
         public void DbContext_BulkMerge_CalledTwice_ExceededBatchSizeTwice_100Changes()
         {
-            using (var schoolContext = new SchoolContext(SchoolContextHelper.CreateNewContextOptions()))
+            using (var schoolContext = TestWithSqlite.CreateSchoolContext())
             {
                 var fixture = new Fixture();
 
@@ -86,14 +85,13 @@ namespace SaveChangesMaybe.Tests
                 Assert.Equal(addedCourses, schoolContext.Courses.Count());
 
                 SaveChangesMaybeBufferHelper.FlushCache();
-
             }
         }
 
         [Fact]
         public void DbContext_BulkMerge_CalledTwice_ExceededBatchSizeOnce_100Changes()
         {
-            using (var schoolContext = new SchoolContext(SchoolContextHelper.CreateNewContextOptions()))
+            using (var schoolContext = TestWithSqlite.CreateSchoolContext())
             {
                 var fixture = new Fixture();
 

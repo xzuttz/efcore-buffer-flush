@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -34,10 +35,19 @@ static void ConfigureApplicationServices(HostBuilderContext context, IServiceCol
 {
     services.AddHostedService<SaveChangesMaybeWorker>();
 
-    services.AddDbContext<SchoolContext>(optionsBuilder =>
-    {
-        optionsBuilder.UseInMemoryDatabase(databaseName: "SchoolDbInMemory");
-    });
+    var connection = new SqliteConnection("DataSource=:memory:");
+    connection.Open();
+
+    var options = new DbContextOptionsBuilder<SchoolContext>()
+        .UseSqlite(connection)
+        .Options;
+
+    var dbCtx = new SchoolContext(options);
+
+    dbCtx.Database.EnsureDeleted();
+    dbCtx.Database.EnsureCreated();
+
+    services.AddSingleton<SchoolContext>(dbCtx);
 
     services.AddSaveChangesMaybeServiceFactory();
 }

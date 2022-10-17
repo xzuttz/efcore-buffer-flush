@@ -1,32 +1,36 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Linq;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using SaveChangesMaybe.DemoConsole.Models;
 
 namespace SaveChangesMaybe.Tests
 {
-    internal static class SchoolContextHelper
+    public static class TestWithSqlite
     {
-        internal static DbContextOptions<SchoolContext> CreateNewContextOptions()
+        public static SchoolContext CreateSchoolContext()
         {
-            // Create a fresh service provider, and therefore a fresh 
-            // InMemory database instance.
-            var serviceProvider = new ServiceCollection()
-                .AddEntityFrameworkInMemoryDatabase()
-                .BuildServiceProvider();
+            string InMemoryConnectionString = "DataSource=:memory:";
+            SqliteConnection _connection;
+            SchoolContext DbContext;
+            _connection = new SqliteConnection(InMemoryConnectionString);
+            _connection.Open();
 
-            var dbName = Guid.NewGuid().ToString();
+            var options = new DbContextOptionsBuilder<SchoolContext>()
+                .UseSqlite(_connection)
+                .Options;
 
-            Debug.WriteLine(dbName);
+            DbContext = new SchoolContext(options);
 
-            // Create a new options instance telling the context to use an
-            // InMemory database and the new service provider.
-            var builder = new DbContextOptionsBuilder<SchoolContext>();
-            builder.UseInMemoryDatabase(Guid.NewGuid().ToString())
-                .UseInternalServiceProvider(serviceProvider);
+            DbContext.ChangeTracker
+                .Entries()
+                .ToList()
+                .ForEach(e => e.State = EntityState.Detached);
 
-            return builder.Options;
+            DbContext.Database.EnsureDeleted();
+            DbContext.Database.EnsureCreated();
+            
+            return DbContext;
         }
     }
 }

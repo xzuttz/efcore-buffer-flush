@@ -20,38 +20,40 @@ namespace SaveChangesMaybe.Tests
         [Fact]
         public void DbSet_BulkMerge_CalledOnce_NotExceedingBatchSize_ZeroChanges()
         {
-            using (var schoolContext = new SchoolContext(SchoolContextHelper.CreateNewContextOptions()))
+            var fixture = new Fixture();
+
+            fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
+                .ForEach(b => fixture.Behaviors.Remove(b));
+            fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+
+            var composer = fixture.Build<Course>();
+
+            int addedTimes = 0;
+
+            int addedCourses = 0;
+
+            using (var DbContext = TestWithSqlite.CreateSchoolContext())
             {
-                var fixture = new Fixture();
-
-                fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
-                    .ForEach(b => fixture.Behaviors.Remove(b));
-                fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-
-                var composer = fixture.Build<Course>();
-
-                int addedTimes = 0;
-
-                int addedCourses = 0;
-
                 while (addedTimes < 1)
                 {
                     var numberOfCoursesToAdd = 50;
 
                     var courses = composer.CreateMany(numberOfCoursesToAdd).ToList();
 
-                    schoolContext.Courses.BulkMergeMaybe(courses, batchSize: 60,
+
+                    DbContext.Courses.BulkMergeMaybe(courses, batchSize: 60,
                         operation =>
                         {
-                            operation.AllowDuplicateKeys = true;
+                            //operation.AllowDuplicateKeys = true;
                         });
+
 
                     addedCourses += numberOfCoursesToAdd;
                     addedTimes++;
                     _testOutputHelper.WriteLine(addedTimes.ToString());
                 }
 
-                Assert.Equal(0, schoolContext.Courses.Count());
+                Assert.Equal(0, DbContext.Courses.Count());
 
                 SaveChangesMaybeBufferHelper.FlushCache();
             }
@@ -60,30 +62,32 @@ namespace SaveChangesMaybe.Tests
         [Fact]
         public void DbSet_BulkMerge_CalledTwice_ExceededBatchSizeTwice_100Changes()
         {
-            using (var schoolContext = new SchoolContext(SchoolContextHelper.CreateNewContextOptions()))
+            var fixture = new Fixture();
+
+            fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
+                .ForEach(b => fixture.Behaviors.Remove(b));
+            fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+
+            var composer = fixture.Build<Course>();
+
+            int addedTimes = 0;
+
+            int addedCourses = 0;
+
+            int duplicates = 0;
+
+            using (var DbContext = TestWithSqlite.CreateSchoolContext())
             {
-                var fixture = new Fixture();
-
-                fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
-                    .ForEach(b => fixture.Behaviors.Remove(b));
-                fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-
-                var composer = fixture.Build<Course>();
-
-                int addedTimes = 0;
-
-                int addedCourses = 0;
-
                 while (addedTimes < 2)
                 {
                     var numberOfCoursesToAdd = 50;
 
                     var courses = composer.CreateMany(numberOfCoursesToAdd).ToList();
 
-                    schoolContext.Courses.BulkMergeMaybe(courses, batchSize: 50,
+                    DbContext.Courses.BulkMergeMaybe(courses, batchSize: 50,
                         operation =>
                         {
-                            operation.AllowDuplicateKeys = true;
+                            operation.AllowDuplicateKeys = false;
                         });
 
                     addedCourses += numberOfCoursesToAdd;
@@ -91,7 +95,7 @@ namespace SaveChangesMaybe.Tests
                     _testOutputHelper.WriteLine(addedTimes.ToString());
                 }
 
-                Assert.Equal(addedCourses, schoolContext.Courses.Count());
+                Assert.Equal(addedCourses, DbContext.Courses.Count());
 
                 SaveChangesMaybeBufferHelper.FlushCache();
             }
@@ -100,29 +104,30 @@ namespace SaveChangesMaybe.Tests
         [Fact]
         public void DbSet_BulkMerge_CalledTwice_ExceededBatchSizeOnce_100Changes()
         {
-            using (var schoolContext = new SchoolContext(SchoolContextHelper.CreateNewContextOptions()))
+            var fixture = new Fixture();
+
+            fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
+                .ForEach(b => fixture.Behaviors.Remove(b));
+            fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+
+            var composer = fixture.Build<Course>();
+
+            int addedTimes = 0;
+
+            int addedCourses = 0;
+
+            using (var DbContext = TestWithSqlite.CreateSchoolContext())
             {
-                var fixture = new Fixture();
-
-                fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
-                    .ForEach(b => fixture.Behaviors.Remove(b));
-                fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-
-                var composer = fixture.Build<Course>();
-
-                int addedTimes = 0;
-
-                int addedCourses = 0;
-
                 while (addedTimes < 2)
                 {
                     var numberOfCoursesToAdd = 50;
 
                     var courses = composer.CreateMany(numberOfCoursesToAdd).ToList();
 
-                    schoolContext.Courses.BulkMergeMaybe(courses, batchSize: 60, 
+                    DbContext.Courses.BulkMergeMaybe(courses, batchSize: 60,
                         operation =>
                         {
+                            operation.ColumnPrimaryKeyExpression = course => course.CourseID;
                             operation.AllowDuplicateKeys = true;
                         });
 
@@ -131,10 +136,9 @@ namespace SaveChangesMaybe.Tests
                     _testOutputHelper.WriteLine(addedTimes.ToString());
                 }
 
-                Assert.Equal(100, schoolContext.Courses.Count());
+                Assert.Equal(100, DbContext.Courses.Count());
 
                 SaveChangesMaybeBufferHelper.FlushCache();
-
             }
         }
     }
