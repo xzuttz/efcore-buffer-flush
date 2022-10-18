@@ -17,7 +17,9 @@ namespace SaveChangesMaybe.Core
             {
                 // Find all entries for the DBSet
 
-                var changedEntities = GetChangedEntities(wrapper.DbSetType);
+                var entityTypeName = wrapper.DbSetType;
+
+                var changedEntities = GetChangedEntities(entityTypeName);
 
                 if (!changedEntities.Any())
                 {
@@ -48,24 +50,32 @@ namespace SaveChangesMaybe.Core
                 {
                     Log.Logger.Debug("Batch size exceeded");
 
-                    FlushDbSetBufferAndClearMemory(wrapper, all);
+                    FlushDbSetBufferAndClearMemory(entityTypeName, all);
                 }
             }
         }
 
-        internal static void FlushDbSetBuffer<T>(SaveChangesMaybeWrapper<T> wrapper) where T : class
+        /// <summary>
+        /// Used by timers
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entityTypeName"></param>
+        internal static void FlushDbSetBuffer<T>(string entityTypeName) where T : class
         {
             lock (PadLock)
             {
-                var changedEntities = GetChangedEntities(wrapper.DbSetType).Cast<SaveChangesBuffer<T>>().ToList();
+                var changedEntities = GetChangedEntities(entityTypeName).Cast<SaveChangesBuffer<T>>().ToList();
 
                 if (changedEntities.Any())
                 {
-                    FlushDbSetBufferAndClearMemory(wrapper, changedEntities.ToList());
+                    FlushDbSetBufferAndClearMemory(entityTypeName, changedEntities.ToList());
                 }
             }
         }
 
+        /// <summary>
+        /// Used to clear the cache after every unit test
+        /// </summary>
         public static void FlushCache()
         {
             lock (PadLock)
@@ -74,10 +84,9 @@ namespace SaveChangesMaybe.Core
             }
         }
 
-        private static List<object> GetChangedEntities(string key)
+        private static List<object> GetChangedEntities(string entityTypeName)
         {
-            //var q = SaveChangesMaybeBufferBase<BufferDummy>.ChangedEntities["moo"];
-            return ChangedEntities.ContainsKey(key) ? ChangedEntities[key] : new List<object>();
+            return ChangedEntities.ContainsKey(entityTypeName) ? ChangedEntities[entityTypeName] : new List<object>();
         }
 
         private static void ClearDbSetBufferMemory(string entityTypeName)
@@ -88,7 +97,7 @@ namespace SaveChangesMaybe.Core
             }
         }
 
-        private static void FlushDbSetBufferAndClearMemory<T>(SaveChangesMaybeWrapper<T> wrapper, List<SaveChangesBuffer<T>> all) where T : class
+        private static void FlushDbSetBufferAndClearMemory<T>(string entityTypeName, List<SaveChangesBuffer<T>> all) where T : class
         {
             SaveChanges(all);
 
@@ -105,7 +114,7 @@ namespace SaveChangesMaybe.Core
                 throw new NullReferenceException("Could not find a DbContext to execute future actions on");
             }
 
-            ClearDbSetBufferMemory(wrapper.DbSetType);
+            ClearDbSetBufferMemory(entityTypeName);
         }
 
         private static void SaveChanges<T>(List<SaveChangesBuffer<T>> buffer) where T : class
