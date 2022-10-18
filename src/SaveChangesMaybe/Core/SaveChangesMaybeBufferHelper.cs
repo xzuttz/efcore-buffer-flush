@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using SaveChangesMaybe.Models;
 using Serilog;
-using Serilog.Core;
 
 namespace SaveChangesMaybe.Core
 {
@@ -28,8 +28,9 @@ namespace SaveChangesMaybe.Core
                 {
                     Options = wrapper.Options,
                     OperationType = wrapper.OperationType,
-                    SaveChangesCallback = wrapper.SaveChangesCallback
-                };
+                    SaveChangesCallback = wrapper.SaveChangesCallback,
+                    DbContext = wrapper.DbContext
+                };  
 
                 foreach (var entity in wrapper.Entities)
                 {
@@ -117,6 +118,19 @@ namespace SaveChangesMaybe.Core
 
                     SaveChanges(callBack, allChangesByOptions);
                 }
+            }
+
+            // Execute all future Actions
+
+            var firstBuffer = all.First();
+
+            if (firstBuffer.DbContext != null)
+            {
+                firstBuffer.DbContext.ExecuteFutureAction();
+            }
+            else
+            {
+                throw new NullReferenceException("Could not find a DbContext to execute future actions on");
             }
 
             ClearDbSetBufferMemory(wrapper.DbSetType);

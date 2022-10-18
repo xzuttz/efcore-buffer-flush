@@ -1,7 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using SaveChangesMaybe.Core;
 using SaveChangesMaybe.Models;
+using System.Collections.Generic;
 using Z.BulkOperations;
+using Z.EntityFramework.Plus;
 
 namespace SaveChangesMaybe.Extensions
 {
@@ -26,11 +29,11 @@ namespace SaveChangesMaybe.Extensions
             {
                 if (options is null)
                 {
-                    dbContext.BulkMerge(list);
+                    dbContext.FutureAction(_ => dbContext.BulkMerge(list));
                 }
                 else
                 {
-                    dbContext.BulkMerge(list, options);
+                    dbContext.FutureAction(_ => dbContext.BulkMerge(list, options));
                 }
             });
 
@@ -40,7 +43,8 @@ namespace SaveChangesMaybe.Extensions
                 BatchSize = batchSize,
                 Entities = entities,
                 OperationType = SaveChangesMaybeOperationType.BulkMerge,
-                Options = options
+                Options = options,
+                DbContext = dbContext
             };
 
             SaveChangesMaybeBufferHelper.SaveChangesMaybe(wrapper);
@@ -60,16 +64,18 @@ namespace SaveChangesMaybe.Extensions
 
         public static void BulkMergeMaybe<T>(this DbSet<T> dbSet, List<T> entities, int batchSize, Action<BulkOperation<T>>? options = null) where T : class
         {
+            var dbContext = dbSet.GetService<ICurrentDbContext>().Context;
 
             var callback = new Action<List<T>>(list =>
             {
+
                 if (options is null)
                 {
-                    dbSet.BulkMerge(list);
+                    dbContext.FutureAction(_ => dbContext.BulkMerge(list));
                 }
                 else
                 {
-                    dbSet.BulkMerge(list, options);
+                    dbContext.FutureAction(_ => dbContext.BulkMerge(list, options));
                 }
             });
 
@@ -79,7 +85,8 @@ namespace SaveChangesMaybe.Extensions
                 BatchSize = batchSize,
                 Entities = entities,
                 OperationType = SaveChangesMaybeOperationType.BulkMerge,
-                Options = options
+                Options = options,
+                DbContext = dbContext
             };
 
             SaveChangesMaybeBufferHelper.SaveChangesMaybe(wrapper);

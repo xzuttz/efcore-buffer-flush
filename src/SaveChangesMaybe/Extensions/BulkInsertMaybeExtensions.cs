@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using SaveChangesMaybe.Core;
 using SaveChangesMaybe.Models;
 using Z.BulkOperations;
@@ -25,11 +26,11 @@ namespace SaveChangesMaybe.Extensions
             {
                 if (options is null)
                 {
-                    dbContext.BulkInsert(list);
+                    dbContext.FutureAction(_ => dbContext.BulkInsert(list));
                 }
                 else
                 {
-                    dbContext.BulkInsert(list, options);
+                    dbContext.FutureAction(_ => dbContext.BulkInsert(list, options));
                 }
             });
 
@@ -39,7 +40,8 @@ namespace SaveChangesMaybe.Extensions
                 BatchSize = batchSize,
                 Entities = entities,
                 OperationType = SaveChangesMaybeOperationType.BulkInsert,
-                Options = options
+                Options = options,
+                DbContext = dbContext
             };
 
             SaveChangesMaybeBufferHelper.SaveChangesMaybe(wrapper);
@@ -59,16 +61,17 @@ namespace SaveChangesMaybe.Extensions
 
         public static void BulkInsertMaybe<T>(this DbSet<T> dbSet, List<T> entities, int batchSize, Action<BulkOperation<T>>? options = null) where T : class
         {
+            var dbContext = dbSet.GetService<ICurrentDbContext>().Context;
 
             var callback = new Action<List<T>>(list =>
             {
                 if (options is null)
                 {
-                    dbSet.BulkInsert(list);
+                    dbContext.FutureAction(_ => dbContext.BulkInsert(list));
                 }
                 else
                 {
-                    dbSet.BulkInsert(list, options);
+                    dbContext.FutureAction(_ => dbContext.BulkInsert(list, options));
                 }
             });
 
@@ -78,7 +81,8 @@ namespace SaveChangesMaybe.Extensions
                 BatchSize = batchSize,
                 Entities = entities,
                 OperationType = SaveChangesMaybeOperationType.BulkInsert,
-                Options = options
+                Options = options,
+                DbContext = dbContext
             };
 
             SaveChangesMaybeBufferHelper.SaveChangesMaybe(wrapper);

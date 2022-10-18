@@ -1,4 +1,5 @@
-﻿using Z.BulkOperations;
+﻿using Microsoft.EntityFrameworkCore;
+using Z.BulkOperations;
 
 namespace SaveChangesMaybe.Models
 {
@@ -8,6 +9,7 @@ namespace SaveChangesMaybe.Models
         public Action<BulkOperation<T>>? Options { get; set; }
         public int BatchSize { get; set; }
         public string DbSetType => typeof(T).ToString();
+        public DbContext DbContext { get; set; }
         public SaveChangesMaybeOperationType OperationType { get; set; }
         public List<T> Entities { get; set; }
     }
