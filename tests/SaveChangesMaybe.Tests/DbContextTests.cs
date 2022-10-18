@@ -8,8 +8,15 @@ using Xunit.Abstractions;
 
 namespace SaveChangesMaybe.Tests
 {
-    public partial class DbSetTests
+    public class DbContextTests
     {
+        private readonly ITestOutputHelper _testOutputHelper;
+
+        public DbContextTests(ITestOutputHelper testOutputHelper)
+        {
+            _testOutputHelper = testOutputHelper;
+        }
+
         [Fact]
         public void DbContext_BulkMerge_CalledOnce_NotExceedingBatchSize_ZeroChanges()
         {
