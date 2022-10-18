@@ -90,37 +90,9 @@ namespace SaveChangesMaybe.Core
 
         private static void FlushDbSetBufferAndClearMemory<T>(SaveChangesMaybeWrapper<T> wrapper, List<SaveChangesBuffer<T>> all) where T : class
         {
-            // Group changes first by operation type, then by options, and persist
+            SaveChanges(all);
 
-            var entitiesGroupedByOperationType = all.GroupBy(x => x.OperationType);
-
-            using var operationEnumerator = entitiesGroupedByOperationType.GetEnumerator();
-
-            while (operationEnumerator.MoveNext())
-            {
-                var allChangesByOperation = operationEnumerator.Current.ToList();
-
-                var entitiesGroupedByOptions = allChangesByOperation.GroupBy(x => x.Options);
-
-                using var optionsEnumerator = entitiesGroupedByOptions.GetEnumerator();
-
-                while (optionsEnumerator.MoveNext())
-                {
-                    var allChangesByOptions = optionsEnumerator.Current.ToList().SelectMany(x => x.Entities).Cast<T>().ToList();
-
-                    // Save changes
-
-                    // If callback on wrapper is null, the call is from the fixed SaveChangesMaybeDbSetTimer. In this case, pick the first CallBack from any of the entities in the list, as they are in the same operation and options group, the same callback applies.
-
-                    var callBack = optionsEnumerator.Current.First().SaveChangesCallback;
-
-                    Debug.WriteLine(optionsEnumerator.Current.First().OperationType);
-
-                    SaveChanges(callBack, allChangesByOptions);
-                }
-            }
-
-            // Execute all future Actions
+            // Execute all future Actions. DbContext instance is the same on all SaveChangesBuffer.
 
             var firstBuffer = all.First();
 
@@ -136,15 +108,21 @@ namespace SaveChangesMaybe.Core
             ClearDbSetBufferMemory(wrapper.DbSetType);
         }
 
-        private static void SaveChanges<T>(Action<List<T>> callBack, List<T> entities) where T : class
+        private static void SaveChanges<T>(List<SaveChangesBuffer<T>> buffer) where T : class
         {
-            if (entities.Any())
+            foreach (var saveChangesBuffer in buffer)
             {
-                callBack.Invoke(entities);
-            }
-            else
-            {
-                Log.Logger.Debug("No entities to save");
+                Debug.WriteLine($"Operation: {saveChangesBuffer.OperationType}");
+
+                if (saveChangesBuffer.Entities.Any())
+                {
+                    var list = saveChangesBuffer.Entities.Cast<T>().ToList();
+                    saveChangesBuffer.SaveChangesCallback.Invoke(list);
+                }
+                else
+                {
+                    Log.Logger.Debug("No entities to save");
+                }
             }
         }
     }
