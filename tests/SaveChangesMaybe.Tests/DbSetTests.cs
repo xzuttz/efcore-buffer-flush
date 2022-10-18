@@ -74,8 +74,6 @@ namespace SaveChangesMaybe.Tests
 
             int addedCourses = 0;
 
-            int duplicates = 0;
-
             using (var DbContext = TestWithSqlite.CreateSchoolContext())
             {
                 while (addedTimes < 2)

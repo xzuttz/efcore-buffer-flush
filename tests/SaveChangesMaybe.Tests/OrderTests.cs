@@ -15,23 +15,22 @@ namespace SaveChangesMaybe.Tests
         {
             using (var schoolContext = TestWithSqlite.CreateSchoolContext())
             {
-                var course1 = new Course
-                {
-                    CourseID = Guid.NewGuid(),
-                    Credits = 200,
-                    Title = "My course 1"
-                };
+                var course1 = new Course(
+                    Guid.NewGuid(),
+                    "My course 1",
+                    200,
+                    new List<Enrollment>());
 
                 var courses = new List<Course> { course1 };
 
                 schoolContext.BulkMergeMaybe(courses, 2, Options);
 
-                var course2 = new Course()
-                {
-                    CourseID = Guid.NewGuid(),
-                    Credits = 100,
-                    Title = "My course 1"
-                };
+                var course2 = new Course(
+                    Guid.NewGuid(),
+                    "My course 1",
+                    100,
+                    new List<Enrollment>()
+                );
 
                 courses = new List<Course>() { course2 };
 
@@ -49,23 +48,23 @@ namespace SaveChangesMaybe.Tests
         {
             using (var schoolContext = TestWithSqlite.CreateSchoolContext())
             {
-                var course1 = new Course
-                {
-                    CourseID = Guid.NewGuid(),
-                    Credits = 200,
-                    Title = "My course 1"
-                };
+                var course1 = new Course(
+                    Guid.NewGuid(),
+                    "My course 1",
+                    200,
+                    new List<Enrollment>()
+                );
 
                 var courses = new List<Course> { course1 };
 
                 schoolContext.BulkUpdateMaybe(courses, batchSize: 2, Options);
 
-                var course2 = new Course()
-                {
-                    CourseID = Guid.NewGuid(),
-                    Credits = 100,
-                    Title = "My course 1"
-                };
+                var course2 = new Course(
+                    Guid.NewGuid(),
+                    "My course 1",
+                    100,
+                    new List<Enrollment>()
+                );
 
                 courses = new List<Course>() { course2 };
 
@@ -83,23 +82,24 @@ namespace SaveChangesMaybe.Tests
         {
             using (var schoolContext = TestWithSqlite.CreateSchoolContext())
             {
-                var course1 = new Course
-                {
-                    CourseID = Guid.NewGuid(),
-                    Credits = 200,
-                    Title = "My course 1"
-                };
+                var course1 = new Course(
+                    Guid.NewGuid(),
+                    "My course 1",
+                    200,
+                    new List<Enrollment>()
+                );
 
                 var courses = new List<Course> { course1 };
 
                 schoolContext.BulkInsertMaybe(courses, batchSize: 2, Options);
 
-                var course2 = new Course()
-                {
-                    CourseID = Guid.NewGuid(),
-                    Credits = 100,
-                    Title = "My course 1"
-                };
+                var course2 = new Course(
+                    Guid.NewGuid(),
+                    "My course 1",
+                    100,
+                    new List<Enrollment>()
+                );
+
 
                 courses = new List<Course>() { course2 };
 
@@ -117,23 +117,22 @@ namespace SaveChangesMaybe.Tests
         {
             using (var schoolContext = TestWithSqlite.CreateSchoolContext())
             {
-                var course1 = new Course
-                {
-                    CourseID = Guid.NewGuid(),
-                    Credits = 200,
-                    Title = "My course 1"
-                };
+                var course1 = new Course(Guid.NewGuid(),
+                    "My course 1",
+                    200,
+                    new List<Enrollment>()
+                );
 
                 var courses = new List<Course> { course1 };
 
                 schoolContext.BulkUpdateMaybe(courses, batchSize: 2, Options);
 
-                var course2 = new Course()
-                {
-                    CourseID = Guid.NewGuid(),
-                    Credits = 100,
-                    Title = "My course 1"
-                };
+                var course2 = new Course(
+                    Guid.NewGuid(), 
+                    "My course 1", 
+                    100, 
+                    new List<Enrollment>()
+                );
 
                 courses = new List<Course>() { course2 };
 
@@ -151,23 +150,21 @@ namespace SaveChangesMaybe.Tests
         {
             using (var schoolContext = TestWithSqlite.CreateSchoolContext())
             {
-                var course1 = new Course
-                {
-                    CourseID = Guid.NewGuid(),
-                    Credits = 200,
-                    Title = "My course 1"
-                };
+                var course1 = new Course(Guid.NewGuid(),
+                    "My course 1",
+                    200,
+                    new List<Enrollment>()
+                );
 
                 var courses = new List<Course> { course1 };
 
                 schoolContext.BulkInsertMaybe(courses, batchSize: 2, Options);
 
-                var course2 = new Course()
-                {
-                    CourseID = Guid.NewGuid(),
-                    Credits = 100,
-                    Title = "My course 1"
-                };
+                var course2 = new Course(Guid.NewGuid(),
+                    "My course 1",
+                    100,
+                    new List<Enrollment>()
+                );
 
                 courses = new List<Course>() { course2 };
 
@@ -186,23 +183,21 @@ namespace SaveChangesMaybe.Tests
         {
             using (var schoolContext = TestWithSqlite.CreateSchoolContext())
             {
-                var course1 = new Course
-                {
-                    CourseID = Guid.NewGuid(),
-                    Credits = 200,
-                    Title = "My course 1"
-                };
+                var course1 = new Course(Guid.NewGuid(),
+                    "My course 1",
+                    200,
+                    new List<Enrollment>()
+                );
 
                 var courses = new List<Course> { course1 };
 
                 schoolContext.BulkUpdateMaybe(courses, 2, Options);
 
-                var course2 = new Course()
-                {
-                    CourseID = Guid.NewGuid(),
-                    Credits = 100,
-                    Title = "My course 1"
-                };
+                var course2 = new Course(Guid.NewGuid(),
+                    "My course 1",
+                    100,
+                    new List<Enrollment>()
+                );
 
                 courses = new List<Course>() { course2 };
 

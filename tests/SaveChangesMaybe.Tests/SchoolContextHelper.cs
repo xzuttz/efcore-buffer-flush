@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using SaveChangesMaybe.DemoConsole.Models;
 
@@ -20,11 +19,6 @@ namespace SaveChangesMaybe.Tests
                 .Options;
 
             DbContext = new SchoolContext(options);
-
-            DbContext.ChangeTracker
-                .Entries()
-                .ToList()
-                .ForEach(e => e.State = EntityState.Detached);
 
             DbContext.Database.EnsureDeleted();
             DbContext.Database.EnsureCreated();

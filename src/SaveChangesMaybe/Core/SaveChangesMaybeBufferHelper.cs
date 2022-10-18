@@ -26,13 +26,20 @@ namespace SaveChangesMaybe.Core
                     ChangedEntities[wrapper.DbSetType] = changedEntities;
                 }
 
-                var bufferWithOptions = new SaveChangesBuffer<T>()
-                {
-                    Options = wrapper.Options,
-                    OperationType = wrapper.OperationType,
-                    SaveChangesCallback = wrapper.SaveChangesCallback,
-                    DbContext = wrapper.DbContext
-                };  
+                var bufferWithOptions = new SaveChangesBuffer<T>
+                (
+                    wrapper.SaveChangesCallback, 
+                    wrapper.DbContext, 
+                    wrapper.Options, 
+                    wrapper.OperationType
+                );
+
+                //{
+                //    Options = wrapper.Options,
+                //    OperationType = wrapper.OperationType,
+                //    SaveChangesCallback = wrapper.SaveChangesCallback,
+                //    DbContext = wrapper.DbContext,
+                //};  
 
                 foreach (var entity in wrapper.Entities)
                 {

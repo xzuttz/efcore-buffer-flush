@@ -38,15 +38,15 @@ namespace SaveChangesMaybe.Extensions
             });
 
             var wrapper = new SaveChangesMaybeWrapper<T>
-            {
-                SaveChangesCallback = callback,
-                BatchSize = batchSize,
-                Entities = entities,
-                OperationType = SaveChangesMaybeOperationType.BulkMerge,
-                Options = options,
-                DbContext = dbContext
-            };
-
+            (
+                callback,
+                options,
+                batchSize,
+                dbContext,
+                SaveChangesMaybeOperationType.BulkMerge,
+                entities
+            );
+            
             SaveChangesMaybeBufferHelper.SaveChangesMaybe(wrapper);
         }
 
@@ -80,14 +80,14 @@ namespace SaveChangesMaybe.Extensions
             });
 
             var wrapper = new SaveChangesMaybeWrapper<T>
-            {
-                SaveChangesCallback = callback,
-                BatchSize = batchSize,
-                Entities = entities,
-                OperationType = SaveChangesMaybeOperationType.BulkMerge,
-                Options = options,
-                DbContext = dbContext
-            };
+            (
+                callback,
+                options,
+                batchSize,
+                dbContext,
+                SaveChangesMaybeOperationType.BulkMerge,
+                entities
+            );
 
             SaveChangesMaybeBufferHelper.SaveChangesMaybe(wrapper);
         }

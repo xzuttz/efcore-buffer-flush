@@ -16,9 +16,7 @@ namespace SaveChangesMaybe
 
             _timer.Elapsed += TimerOnElapsed;
 
-            var wrapper = new SaveChangesMaybeWrapper<T>();
-
-            BulkOperationCallback = () => SaveChangesMaybeBufferHelper.FlushDbSetBuffer<T>(wrapper.DbSetType);
+            BulkOperationCallback = () => SaveChangesMaybeBufferHelper.FlushDbSetBuffer<T>(typeof(T).ToString());
         }
 
         private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
