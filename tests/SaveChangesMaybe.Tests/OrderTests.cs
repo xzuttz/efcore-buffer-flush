@@ -210,7 +210,7 @@ namespace SaveChangesMaybe.Tests
 
                 courses = new List<Course>() { course1 };
 
-                schoolContext.BulkUpdateMaybe(courses, 2, Options);
+                schoolContext.BulkUpdateMaybe(courses, 1, Options);
 
                 var savedCourses = schoolContext.Courses.ToList();
 
