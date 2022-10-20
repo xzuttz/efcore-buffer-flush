@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using SaveChangesMaybe.Models;
 using Serilog;
@@ -128,7 +128,7 @@ namespace SaveChangesMaybe.Core
         {
             foreach (var saveChangesBuffer in buffer)
             {
-                Debug.WriteLine($"Operation: {saveChangesBuffer.OperationType}");
+                Log.Logger.Debug($"Operation: {saveChangesBuffer.OperationType}");
 
                 if (saveChangesBuffer.Entities.Any())
                 {

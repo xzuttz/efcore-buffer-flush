@@ -1,10 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using SaveChangesMaybe.Core;
 using SaveChangesMaybe.Models;
-using System.Collections.Generic;
 using Z.BulkOperations;
-using Z.EntityFramework.Plus;
 
 namespace SaveChangesMaybe.Extensions
 {
@@ -27,14 +25,7 @@ namespace SaveChangesMaybe.Extensions
         {
             var callback = new Action<List<T>>(list =>
             {
-                if (options is null)
-                {
-                    dbContext.FutureAction(_ => dbContext.BulkMerge(list));
-                }
-                else
-                {
-                    dbContext.FutureAction(_ => dbContext.BulkMerge(list, options));
-                }
+                dbContext.FutureAction(x => x.BulkMerge(list, options));
             });
 
             var wrapper = new SaveChangesMaybeWrapper<T>
@@ -68,15 +59,7 @@ namespace SaveChangesMaybe.Extensions
 
             var callback = new Action<List<T>>(list =>
             {
-
-                if (options is null)
-                {
-                    dbContext.FutureAction(_ => dbContext.BulkMerge(list));
-                }
-                else
-                {
-                    dbContext.FutureAction(_ => dbContext.BulkMerge(list, options));
-                }
+                dbContext.FutureAction(x => x.BulkMerge(list, options));
             });
 
             var wrapper = new SaveChangesMaybeWrapper<T>

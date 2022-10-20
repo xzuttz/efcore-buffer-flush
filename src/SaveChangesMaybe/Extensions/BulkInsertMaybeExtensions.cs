@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using SaveChangesMaybe.Core;
 using SaveChangesMaybe.Models;
@@ -24,14 +24,7 @@ namespace SaveChangesMaybe.Extensions
         {
             var callback = new Action<List<T>>(list =>
             {
-                if (options is null)
-                {
-                    dbContext.FutureAction(_ => dbContext.BulkInsert(list));
-                }
-                else
-                {
-                    dbContext.FutureAction(_ => dbContext.BulkInsert(list, options));
-                }
+                dbContext.FutureAction(x => x.BulkInsert(list, options));
             });
 
             var wrapper = new SaveChangesMaybeWrapper<T>
@@ -65,14 +58,7 @@ namespace SaveChangesMaybe.Extensions
 
             var callback = new Action<List<T>>(list =>
             {
-                if (options is null)
-                {
-                    dbContext.FutureAction(_ => dbContext.BulkInsert(list));
-                }
-                else
-                {
-                    dbContext.FutureAction(_ => dbContext.BulkInsert(list, options));
-                }
+                dbContext.FutureAction(x => x.BulkInsert(list, options));
             });
 
             var wrapper = new SaveChangesMaybeWrapper<T>
