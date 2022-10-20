@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SaveChangesMaybe.Core;
 using SaveChangesMaybe.DemoConsole.Models;
 using SaveChangesMaybe.Extensions;
 using Xunit;
@@ -41,6 +42,8 @@ namespace SaveChangesMaybe.Tests
                 Assert.Single(savedCourses);
                 Assert.Equal(100, savedCourses.First().Credits);
             }
+
+            SaveChangesMaybeBufferHelper.FlushCache();
         }
 
         [Fact]
@@ -75,6 +78,8 @@ namespace SaveChangesMaybe.Tests
                 Assert.Single(savedCourses);
                 Assert.Equal(100, savedCourses.First().Credits);
             }
+
+            SaveChangesMaybeBufferHelper.FlushCache();
         }
 
         [Fact]
@@ -110,6 +115,8 @@ namespace SaveChangesMaybe.Tests
                 Assert.Single(savedCourses);
                 Assert.Equal(100, savedCourses.First().Credits);
             }
+
+            SaveChangesMaybeBufferHelper.FlushCache();
         }
 
         [Fact]
@@ -143,6 +150,8 @@ namespace SaveChangesMaybe.Tests
                 Assert.Single(savedCourses);
                 Assert.Equal(100, savedCourses.First().Credits);
             }
+
+            SaveChangesMaybeBufferHelper.FlushCache();
         }
 
         [Fact]
@@ -175,8 +184,9 @@ namespace SaveChangesMaybe.Tests
                 Assert.Single(savedCourses);
                 Assert.Equal(100, savedCourses.First().Credits);
             }
-        }
 
+            SaveChangesMaybeBufferHelper.FlushCache();
+        }
 
         [Fact]
         public void BulkUpdateMaybe_BulkInsertMaybe_BulkUpdateMaybe()
@@ -212,8 +222,9 @@ namespace SaveChangesMaybe.Tests
                 Assert.Single(savedCourses);
                 Assert.Equal(200, savedCourses.First().Credits);
             }
-        }
 
+            SaveChangesMaybeBufferHelper.FlushCache();
+        }
 
         private void Options(BulkOperation<Course> obj)
         {
