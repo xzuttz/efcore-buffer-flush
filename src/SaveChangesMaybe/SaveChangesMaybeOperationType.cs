@@ -4,6 +4,7 @@
     {
         BulkMerge,
         BulkUpdate,
-        BulkInsert
+        BulkInsert,
+        BulkDelete
     }
 }

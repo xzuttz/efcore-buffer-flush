@@ -20,6 +20,7 @@ The library has only been tested in a single-threaded environment. The shared bu
 |BulkMergeMaybe       |
 |BulkUpdateMaybe      |
 |BulkInsertMaybe      |
+|BulkDeleteMaybe      |
 
 # BulkMergeMaybe example
 
