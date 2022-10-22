@@ -5,7 +5,7 @@ namespace SaveChangesMaybe.Models
 {
     internal class SaveChangesMaybeWrapper<T> where T : class
     {
-        public SaveChangesMaybeWrapper(Action<List<T>> saveChangesCallback, Action<BulkOperation<T>>? options, int batchSize, DbContext dbContext, SaveChangesMaybeOperationType operationType, List<T> entities)
+        public SaveChangesMaybeWrapper(Action<List<object>> saveChangesCallback, Action<BulkOperation<T>>? options, int batchSize, DbContext dbContext, SaveChangesMaybeOperationType operationType, List<T> entities)
         {
             SaveChangesCallback = saveChangesCallback;
             Options = options;
@@ -15,7 +15,7 @@ namespace SaveChangesMaybe.Models
             Entities = entities;
         }
 
-        public Action<List<T>> SaveChangesCallback { get; set; }
+        public Action<List<object>> SaveChangesCallback { get; set; }
         public Action<BulkOperation<T>>? Options { get; set; }
         public int BatchSize { get; set; }
         public string DbSetType => typeof(T).ToString();

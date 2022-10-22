@@ -22,7 +22,7 @@ namespace SaveChangesMaybe.Extensions
 
         public static void BulkDeleteMaybe<T>(this DbContext dbContext, List<T> entities, int batchSize, Action<BulkOperation<T>>? options = null) where T : class
         {
-            var callback = new Action<List<T>>(list =>
+            var callback = new Action<List<object>>(list =>
             {
                 dbContext.FutureAction(x => x.BulkDelete(list, options));
             });
@@ -56,7 +56,7 @@ namespace SaveChangesMaybe.Extensions
         {
             var dbContext = dbSet.GetService<ICurrentDbContext>().Context;
 
-            var callback = new Action<List<T>>(list =>
+            var callback = new Action<List<object>>(list =>
             {
                 dbContext.FutureAction(x => x.BulkDelete(list, options));
             });

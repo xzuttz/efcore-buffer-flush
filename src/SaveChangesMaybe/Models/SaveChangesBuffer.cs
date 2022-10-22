@@ -5,7 +5,7 @@ namespace SaveChangesMaybe.Models
 {
     public class SaveChangesBuffer<T> where T : class
     {
-        public SaveChangesBuffer(Action<List<T>> saveChangesCallback, DbContext dbContext, Action<BulkOperation<T>>? options, SaveChangesMaybeOperationType operationType)
+        public SaveChangesBuffer(Action<List<object>> saveChangesCallback, DbContext dbContext, Action<BulkOperation<T>>? options, SaveChangesMaybeOperationType operationType)
         {
             SaveChangesCallback = saveChangesCallback;
             DbContext = dbContext;
@@ -13,7 +13,7 @@ namespace SaveChangesMaybe.Models
             OperationType = operationType;
         }
 
-        public Action<List<T>> SaveChangesCallback { get; set; }
+        public Action<List<object>> SaveChangesCallback { get; set; }
         public List<object> Entities { get; set; } = new();
         public DbContext DbContext { get; set; }
         public Action<BulkOperation<T>>? Options { get; set; }

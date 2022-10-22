@@ -132,7 +132,7 @@ namespace SaveChangesMaybe.Core
 
                 if (saveChangesBuffer.Entities.Any())
                 {
-                    var list = saveChangesBuffer.Entities.Cast<T>().ToList();
+                    var list = saveChangesBuffer.Entities;
                     saveChangesBuffer.SaveChangesCallback.Invoke(list);
                 }
                 else

@@ -23,7 +23,7 @@ namespace SaveChangesMaybe.Extensions
 
         public static void BulkUpdateMaybe<T>(this DbContext dbContext, List<T> entities, int batchSize, Action<BulkOperation<T>>? options = null) where T : class
         {
-            var callback = new Action<List<T>>(list =>
+            var callback = new Action<List<object>>(list =>
             {
                 dbContext.FutureAction(x => x.BulkUpdate(list, options));
             });
@@ -57,7 +57,7 @@ namespace SaveChangesMaybe.Extensions
         {
             var dbContext = dbSet.GetService<ICurrentDbContext>().Context;
 
-            var callback = new Action<List<T>>(list =>
+            var callback = new Action<List<object>>(list =>
             {
                 dbContext.FutureAction(x => x.BulkUpdate(list, options));
             });
