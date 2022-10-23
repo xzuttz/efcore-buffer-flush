@@ -3,6 +3,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SaveChangesMaybe.DemoConsole.Models;
 using SaveChangesMaybe.Extensions;
+using System.Threading;
+using SaveChangesMaybe.Core;
 using Z.BulkOperations;
 
 namespace SaveChangesMaybe.DemoConsole
@@ -11,20 +13,39 @@ namespace SaveChangesMaybe.DemoConsole
     {
         private readonly ILogger<SaveChangesMaybeWorker> _logger;
         private readonly SchoolContext _schoolCtx;
+        private readonly IHostApplicationLifetime _applicationLifetime;
         private readonly ISaveChangesMaybeServiceFactory _maybeServiceFactory;
 
-        public SaveChangesMaybeWorker(ILogger<SaveChangesMaybeWorker> logger, SchoolContext schoolCtx, ISaveChangesMaybeServiceFactory maybeServiceFactory)
+        public SaveChangesMaybeWorker(ILogger<SaveChangesMaybeWorker> logger, 
+            SchoolContext schoolCtx,
+            IHostApplicationLifetime applicationLifetime,
+            ISaveChangesMaybeServiceFactory maybeServiceFactory)
         {
             _logger = logger;
             _schoolCtx = schoolCtx;
+            _applicationLifetime = applicationLifetime;
             _maybeServiceFactory = maybeServiceFactory;
         }
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            _logger.LogInformation("Executing");
             StartSaveChangesMaybeService();
             SaveDummyData();
-            return Task.CompletedTask;
+            _applicationLifetime.StopApplication();
+            await Task.Delay(5000);
+        }
+
+        public override async Task StartAsync(CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Starting");
+            await base.StartAsync(cancellationToken);
+        }
+
+        public override async Task StopAsync(CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Stopping");
+            await base.StopAsync(cancellationToken);
         }
 
         private void SaveDummyData()
@@ -46,6 +67,7 @@ namespace SaveChangesMaybe.DemoConsole
             var composer2 = fixture2.Build<Student>();
 
             int addedTimes = 0;
+            int loggedInfoTimes = 0;
 
             while (true)
             {
@@ -55,8 +77,6 @@ namespace SaveChangesMaybe.DemoConsole
                     var random = rand.Next(50);
 
                     var courses = composer.CreateMany(random).ToList();
-
-                    //_logger.LogInformation($"Adding {courses.Count} courses.");
 
                     SaveCourses(courses); // Testing if the same call multiple times will result in 1 "group" iteration of the BulkOperation
 
@@ -82,10 +102,24 @@ namespace SaveChangesMaybe.DemoConsole
                 }
                 else
                 {
-                    _logger.LogError($"Number of courses saved: {_schoolCtx.Courses.Count()}");
-                    _logger.LogError($"Number of students saved: {_schoolCtx.Students.Count()}");
+                    if (loggedInfoTimes >= 10)
+                    {
+                        _logger.LogInformation("Flushing cache");
+
+                        SaveChangesMaybeBufferHelper.FlushCache();
+
+                        _logger.LogInformation($"Number of courses saved: {_schoolCtx.Courses.Count()}");
+                        _logger.LogInformation($"Number of students saved: {_schoolCtx.Students.Count()}");
+
+                        return;
+                    }
+
+                    _logger.LogInformation($"Number of courses saved: {_schoolCtx.Courses.Count()}");
+                    _logger.LogInformation($"Number of students saved: {_schoolCtx.Students.Count()}");
 
                     Thread.Sleep(1000);
+
+                    loggedInfoTimes++;
                 }
             }
         }
@@ -112,5 +146,6 @@ namespace SaveChangesMaybe.DemoConsole
 
             saveChangesMaybeService.Start();
         }
+
     }
 }
