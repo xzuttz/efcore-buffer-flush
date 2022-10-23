@@ -1,4 +1,4 @@
-﻿using AutoFixture;
+using AutoFixture;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SaveChangesMaybe.DemoConsole.Models;
@@ -45,6 +45,7 @@ namespace SaveChangesMaybe.DemoConsole
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Stopping");
+            SaveChangesMaybeHelper.FlushCache();
             await base.StopAsync(cancellationToken);
         }
 
@@ -106,7 +107,7 @@ namespace SaveChangesMaybe.DemoConsole
                     {
                         _logger.LogInformation("Flushing cache");
 
-                        SaveChangesMaybeBufferHelper.FlushCache();
+                        SaveChangesMaybeHelper.FlushCache();
 
                         _logger.LogInformation($"Number of courses saved: {_schoolCtx.Courses.Count()}");
                         _logger.LogInformation($"Number of students saved: {_schoolCtx.Students.Count()}");

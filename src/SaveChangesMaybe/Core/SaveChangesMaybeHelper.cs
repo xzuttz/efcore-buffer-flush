@@ -76,7 +76,6 @@ namespace SaveChangesMaybe.Core
         /// Used by timers
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="entityTypeName"></param>
         internal static void FlushDbSet<T>() where T : class
         {
             lock (PadLock)
