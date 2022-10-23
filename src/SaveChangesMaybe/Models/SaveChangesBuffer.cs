@@ -20,7 +20,7 @@ namespace SaveChangesMaybe.Models
         public Action<BulkOperation<T>>? Options { get; set; }
         public SaveChangesMaybeOperationType OperationType { get; set; }
 
-        public void FlushDbSetBuffer()
+        public void FlushChanges()
         {
             SaveChangesMaybeBufferHelper.FlushDbSetBuffer<T>(typeof(T).ToString());
         }
@@ -28,6 +28,6 @@ namespace SaveChangesMaybe.Models
 
     public interface ISaveChangesBuffer
     {
-        void FlushDbSetBuffer();
+        void FlushChanges();
     }
 }

@@ -18,7 +18,7 @@ namespace SaveChangesMaybe.Core
                 {
                     foreach (var saveChangesBuffer in value.ToArray()) // Because we are modifying the list, we need to create a copy with ToArray
                     {
-                        saveChangesBuffer.FlushDbSetBuffer();
+                        saveChangesBuffer.FlushChanges();
                     }
                 }
 
