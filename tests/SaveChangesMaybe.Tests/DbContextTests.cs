@@ -52,7 +52,7 @@ namespace SaveChangesMaybe.Tests
 
                 Assert.Equal(0, schoolContext.Courses.Count());
 
-                SaveChangesMaybeBufferHelper.FlushCache();
+                SaveChangesMaybeHelper.FlushCache();
             }
         }
 
@@ -91,7 +91,7 @@ namespace SaveChangesMaybe.Tests
 
                 Assert.Equal(addedCourses, schoolContext.Courses.Count());
 
-                SaveChangesMaybeBufferHelper.FlushCache();
+                SaveChangesMaybeHelper.FlushCache();
             }
         }
 
@@ -130,7 +130,7 @@ namespace SaveChangesMaybe.Tests
 
                 Assert.Equal(100, schoolContext.Courses.Count());
 
-                SaveChangesMaybeBufferHelper.FlushCache();
+                SaveChangesMaybeHelper.FlushCache();
             }
         }
     }

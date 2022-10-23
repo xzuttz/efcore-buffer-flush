@@ -37,7 +37,7 @@ namespace SaveChangesMaybe.Extensions
                 entities
             );
 
-            SaveChangesMaybeBufferHelper.SaveChangesMaybe(wrapper);
+            SaveChangesMaybeHelper.SaveChangesMaybe(wrapper);
         }
 
         // DbSet
@@ -71,7 +71,7 @@ namespace SaveChangesMaybe.Extensions
                 entities
             );
 
-            SaveChangesMaybeBufferHelper.SaveChangesMaybe(wrapper);
+            SaveChangesMaybeHelper.SaveChangesMaybe(wrapper);
         }
     }
 }

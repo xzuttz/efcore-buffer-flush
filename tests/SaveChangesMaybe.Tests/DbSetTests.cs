@@ -55,7 +55,7 @@ namespace SaveChangesMaybe.Tests
 
                 Assert.Equal(0, DbContext.Courses.Count());
 
-                SaveChangesMaybeBufferHelper.FlushCache();
+                SaveChangesMaybeHelper.FlushCache();
             }
         }
 
@@ -95,7 +95,7 @@ namespace SaveChangesMaybe.Tests
 
                 Assert.Equal(addedCourses, DbContext.Courses.Count());
 
-                SaveChangesMaybeBufferHelper.FlushCache();
+                SaveChangesMaybeHelper.FlushCache();
             }
         }
 
@@ -136,7 +136,7 @@ namespace SaveChangesMaybe.Tests
 
                 Assert.Equal(100, DbContext.Courses.Count());
 
-                SaveChangesMaybeBufferHelper.FlushCache();
+                SaveChangesMaybeHelper.FlushCache();
             }
         }
     }

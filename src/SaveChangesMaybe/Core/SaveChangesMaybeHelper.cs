@@ -3,7 +3,7 @@ using Serilog;
 
 namespace SaveChangesMaybe.Core
 {
-    public static class SaveChangesMaybeBufferHelper
+    public static class SaveChangesMaybeHelper
     {
         /// <summary>
         /// Save all changes and clear memory
@@ -77,7 +77,7 @@ namespace SaveChangesMaybe.Core
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="entityTypeName"></param>
-        internal static void FlushDbSetBuffer<T>(string entityTypeName) where T : class
+        internal static void FlushDbSet<T>(string entityTypeName) where T : class
         {
             lock (PadLock)
             {

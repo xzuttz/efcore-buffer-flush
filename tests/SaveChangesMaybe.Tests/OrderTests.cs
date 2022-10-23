@@ -43,7 +43,7 @@ namespace SaveChangesMaybe.Tests
                 Assert.Equal(100, savedCourses.First().Credits);
             }
 
-            SaveChangesMaybeBufferHelper.FlushCache();
+            SaveChangesMaybeHelper.FlushCache();
         }
 
         [Fact]
@@ -79,7 +79,7 @@ namespace SaveChangesMaybe.Tests
                 Assert.Equal(100, savedCourses.First().Credits);
             }
 
-            SaveChangesMaybeBufferHelper.FlushCache();
+            SaveChangesMaybeHelper.FlushCache();
         }
 
         [Fact]
@@ -116,7 +116,7 @@ namespace SaveChangesMaybe.Tests
                 Assert.Equal(100, savedCourses.First().Credits);
             }
 
-            SaveChangesMaybeBufferHelper.FlushCache();
+            SaveChangesMaybeHelper.FlushCache();
         }
 
         [Fact]
@@ -151,7 +151,7 @@ namespace SaveChangesMaybe.Tests
                 Assert.Equal(100, savedCourses.First().Credits);
             }
 
-            SaveChangesMaybeBufferHelper.FlushCache();
+            SaveChangesMaybeHelper.FlushCache();
         }
 
         [Fact]
@@ -185,7 +185,7 @@ namespace SaveChangesMaybe.Tests
                 Assert.Equal(100, savedCourses.First().Credits);
             }
 
-            SaveChangesMaybeBufferHelper.FlushCache();
+            SaveChangesMaybeHelper.FlushCache();
         }
 
         [Fact]
@@ -223,7 +223,7 @@ namespace SaveChangesMaybe.Tests
                 Assert.Equal(200, savedCourses.First().Credits);
             }
 
-            SaveChangesMaybeBufferHelper.FlushCache();
+            SaveChangesMaybeHelper.FlushCache();
         }
 
         private void Options(BulkOperation<Course> obj)
