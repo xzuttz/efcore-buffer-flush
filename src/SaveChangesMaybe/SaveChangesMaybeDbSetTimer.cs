@@ -15,7 +15,7 @@ namespace SaveChangesMaybe
 
             _timer.Elapsed += TimerOnElapsed;
 
-            BulkOperationCallback = () => SaveChangesMaybeHelper.FlushDbSet<T>(typeof(T).ToString());
+            BulkOperationCallback = SaveChangesMaybeHelper.FlushDbSet<T>;
         }
 
         private void TimerOnElapsed(object? sender, ElapsedEventArgs e)

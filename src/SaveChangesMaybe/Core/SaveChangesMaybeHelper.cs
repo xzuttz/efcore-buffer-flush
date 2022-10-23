@@ -77,10 +77,12 @@ namespace SaveChangesMaybe.Core
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="entityTypeName"></param>
-        internal static void FlushDbSet<T>(string entityTypeName) where T : class
+        internal static void FlushDbSet<T>() where T : class
         {
             lock (PadLock)
             {
+                var entityTypeName = typeof(T).ToString();
+
                 var all = GetChangedEntities(entityTypeName).Cast<SaveChangesBuffer<T>>().ToList();
 
                 if (!all.Any()) return;

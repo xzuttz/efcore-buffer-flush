@@ -22,7 +22,7 @@ namespace SaveChangesMaybe.Models
 
         public void FlushChanges()
         {
-            SaveChangesMaybeHelper.FlushDbSet<T>(typeof(T).ToString());
+            SaveChangesMaybeHelper.FlushDbSet<T>();
         }
     }
 
