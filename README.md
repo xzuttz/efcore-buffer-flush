@@ -33,7 +33,26 @@ _schoolCtx.Students.BulkMergeMaybe(students,
     batchSize: 5000);
 ``` 
 
-# Flushing the cache in a fixed time interval
+# Flushing the cache 
+
+## All DbSets stored in cache
+
+You can use your own logic to determine when to flush the cache and save all changes.
+
+```SaveChangesMaybeBufferHelper.FlushCache()``` flushes all DbSets stored in the cache. 
+
+Application Exit example:
+
+```c#
+public override async Task StopAsync(CancellationToken cancellationToken)
+{
+    _logger.LogInformation("Stopping");
+    SaveChangesMaybeBufferHelper.FlushCache();
+    await base.StopAsync(cancellationToken);
+}
+```
+
+## Fixed time interval
 
 The cache should be flushed every now and then. 
 
@@ -54,17 +73,6 @@ public void ConfigureDbSetFlushIntervals(ISaveChangesMaybeServiceFactory maybeSe
     saveChangesMaybeService.Start();
 }
 ``` 
-
-# Flushing the cache during application exit
-```SaveChangesMaybeBufferHelper.FlushCache()``` flushes everything. It can be called anytime. 
-```c#
-public override async Task StopAsync(CancellationToken cancellationToken)
-{
-    _logger.LogInformation("Stopping");
-    SaveChangesMaybeBufferHelper.FlushCache();
-    await base.StopAsync(cancellationToken);
-}
-```
 
 # Dependenecy Injection
 
