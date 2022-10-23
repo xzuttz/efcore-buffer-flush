@@ -56,7 +56,7 @@ public void ConfigureDbSetFlushIntervals(ISaveChangesMaybeServiceFactory maybeSe
 ``` 
 
 # Flushing the cache during application exit
-
+```SaveChangesMaybeBufferHelper.FlushCache()``` flushes everything. It can be called anytime. 
 ```c#
 public override async Task StopAsync(CancellationToken cancellationToken)
 {
