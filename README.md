@@ -54,6 +54,18 @@ public void ConfigureDbSetFlushIntervals(ISaveChangesMaybeServiceFactory maybeSe
     saveChangesMaybeService.Start();
 }
 ``` 
+
+# Flushing the cache during application exit
+
+```c#
+public override async Task StopAsync(CancellationToken cancellationToken)
+{
+    _logger.LogInformation("Stopping");
+    SaveChangesMaybeBufferHelper.FlushCache();
+    await base.StopAsync(cancellationToken);
+}
+```
+
 # Dependenecy Injection
 
 The library offers a convenient method for adding the `ISaveChangesMaybeServiceFactory` to the IoC provider.
