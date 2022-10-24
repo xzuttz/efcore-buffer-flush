@@ -39,7 +39,7 @@ _schoolCtx.Students.BulkMergeMaybe(students,
 
 You can use your own logic to determine when to flush the cache and save all changes.
 
-```SaveChangesMaybeBufferHelper.FlushCache()``` flushes all DbSets stored in the cache. 
+```SaveChangesMaybeHelper.FlushCache()``` flushes all DbSets stored in the cache. 
 
 Application Exit example:
 
@@ -47,7 +47,7 @@ Application Exit example:
 public override async Task StopAsync(CancellationToken cancellationToken)
 {
     _logger.LogInformation("Stopping");
-    SaveChangesMaybeBufferHelper.FlushCache();
+    SaveChangesMaybeHelper.FlushCache();
     await base.StopAsync(cancellationToken);
 }
 ```
