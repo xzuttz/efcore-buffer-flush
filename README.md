@@ -1,13 +1,18 @@
 # What is Entity Framework Buffer Flush 
-
 This is an extension to the [Entity Framework Plus (and Extensions) library](https://entityframework-plus.net/), which can buffer changes locally, before persisting them in the database.
-Every bulk operation has a corresponding `Maybe` operation, which has a batch size as parameter. When the batch size is reached, the library will flush the internal cache and persist the changes using the Entity Framework Plus (and Extensions) library. 
+Each bulk operation has a `Maybe` operation, which has a batch size parameter. Upon reaching the batch size, the library will flush the internal cache and persist the changes using Entity Framework Plus (and Extensions). 
+
+# When to use this library ?
+The Entity Framework Plus (and Extensions) library also supports batch sizes. It is, however, necessary to have the full batch when saving changes. 
+
+Occasionally, you may not be able to accumulate all changes at once. It might be a good idea to buffer up small changes and persist them in batches rather than persisting them all at once if you expect to save changes frequently. 
+
+If you are consuming messages from Kafka or another message broker, you may not be able to get a batch of messages right away. This library allows you to buffer up changes to a defined batch size or time interval before persisting them, thereby reducing SQL Server's workload. This library might also be useful if you have multiple applications processing messages in parallel and persisting changes to the same tables, and you want to have them back off until the batch size or time interval is reached. 
 
 # Additional information
+The `Maybe` operations in this library utilize an internal buffer to store entities, until the buffer reaches its limit or is flushed by the timer. All original functions of the ZZZ library do not use or flush the buffer, because they don't know about it. In the case of BulkMergeMaybe followed by BulkMerge, the entities from BulkMergeMaybe will not be considered. All of the functionality of the ZZZ library is reused in the `Maybe` operations. They act as wrappers, just with an internal buffer and logic for flushing it.
 
-The `Maybe` operations in this library use an internal buffer to store entities, until the buffer has reached its limit, or until the buffer is flushed by the timer. The buffer will not be used or flushed when calling any of the original non-`Maybe`-functions of the ZZZ library, as they do not know about the buffer. If you first use BulkMergeMaybe and then the original BulkMerge afterwards, the entities from BulkMergeMaybe will not be taken into account. The `Maybe` operations reuse all of the existing functionality of the ZZZ library, they act as a wrapper, just with an internal buffer and logic to determine when to flush it.
-
-The library has only been tested in a single-threaded environment. The shared buffer is static and might not work as expected in mutli-threaded environment such as ASP.NET application that recieves multiple concurrent requests. However, you are welcome to try it out and see if it fits your needs.
+We have only tested the library in a single-threaded environment. If you have an ASP.NET application that receives multiple concurrent requests, the shared buffer may not work as expected due to its static nature. Feel free to test it out and see if it meets your needs.
 
 # CircleCI
 
@@ -33,11 +38,11 @@ _schoolCtx.Students.BulkMergeMaybe(students,
     batchSize: 5000);
 ``` 
 
-# Flushing the cache 
+# Cache flushing
+
+When to flush the cache and save all changes can be determined by your own logic.
 
 ## All DbSets stored in cache
-
-You can use your own logic to determine when to flush the cache and save all changes.
 
 ```SaveChangesMaybeHelper.FlushCache()``` flushes all DbSets stored in the cache. 
 
@@ -60,7 +65,7 @@ SaveChangesMaybeHelper.FlushDbSet<Student>();
 
 ## Fixed time interval
 
-The cache should be flushed every now and then. 
+It is recommended that the cache be flushed periodically. 
 
 Create a `SaveChangesMaybeDbSetTimer` for every DbSet and add it to the `SaveChangesMaybeService`.
 
@@ -82,7 +87,7 @@ public void ConfigureDbSetFlushIntervals(ISaveChangesMaybeServiceFactory maybeSe
 
 # Dependenecy Injection
 
-The library offers a convenient method for adding the `ISaveChangesMaybeServiceFactory` to the IoC provider.
+The library provides a convenient method for adding the `ISaveChangesMaybeServiceFactory` to the IoC provider.
 
 ```c#
 services.AddSaveChangesMaybeServiceFactory();
