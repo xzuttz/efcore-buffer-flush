@@ -9,7 +9,7 @@ using Z.BulkOperations;
 
 namespace SaveChangesMaybe.Tests
 {
-    public class OrderTests
+    public class OrderTests : TestBase
     {
         [Fact]
         public void BulkMergeMaybe_BulkUpdateMaybe()
@@ -42,8 +42,6 @@ namespace SaveChangesMaybe.Tests
                 Assert.Single(savedCourses);
                 Assert.Equal(100, savedCourses.First().Credits);
             }
-
-            SaveChangesMaybeHelper.FlushCache();
         }
 
         [Fact]
@@ -78,8 +76,6 @@ namespace SaveChangesMaybe.Tests
                 Assert.Single(savedCourses);
                 Assert.Equal(100, savedCourses.First().Credits);
             }
-
-            SaveChangesMaybeHelper.FlushCache();
         }
 
         [Fact]
@@ -115,8 +111,6 @@ namespace SaveChangesMaybe.Tests
                 Assert.Single(savedCourses);
                 Assert.Equal(100, savedCourses.First().Credits);
             }
-
-            SaveChangesMaybeHelper.FlushCache();
         }
 
         [Fact]
@@ -150,8 +144,6 @@ namespace SaveChangesMaybe.Tests
                 Assert.Single(savedCourses);
                 Assert.Equal(100, savedCourses.First().Credits);
             }
-
-            SaveChangesMaybeHelper.FlushCache();
         }
 
         [Fact]
@@ -184,8 +176,6 @@ namespace SaveChangesMaybe.Tests
                 Assert.Single(savedCourses);
                 Assert.Equal(100, savedCourses.First().Credits);
             }
-
-            SaveChangesMaybeHelper.FlushCache();
         }
 
         [Fact]
@@ -222,8 +212,6 @@ namespace SaveChangesMaybe.Tests
                 Assert.Single(savedCourses);
                 Assert.Equal(200, savedCourses.First().Credits);
             }
-
-            SaveChangesMaybeHelper.FlushCache();
         }
 
         private void Options(BulkOperation<Course> obj)

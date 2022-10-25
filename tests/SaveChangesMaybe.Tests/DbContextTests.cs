@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace SaveChangesMaybe.Tests
 {
-    public class DbContextTests
+    public class DbContextTests : TestBase
     {
         private readonly ITestOutputHelper _testOutputHelper;
 
@@ -51,8 +51,6 @@ namespace SaveChangesMaybe.Tests
                 }
 
                 Assert.Equal(0, schoolContext.Courses.Count());
-
-                SaveChangesMaybeHelper.FlushCache();
             }
         }
 
@@ -90,8 +88,6 @@ namespace SaveChangesMaybe.Tests
                 }
 
                 Assert.Equal(addedCourses, schoolContext.Courses.Count());
-
-                SaveChangesMaybeHelper.FlushCache();
             }
         }
 
@@ -129,8 +125,6 @@ namespace SaveChangesMaybe.Tests
                 }
 
                 Assert.Equal(100, schoolContext.Courses.Count());
-
-                SaveChangesMaybeHelper.FlushCache();
             }
         }
     }

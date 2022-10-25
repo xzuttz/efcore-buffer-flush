@@ -1,6 +1,5 @@
 using System.Linq;
 using AutoFixture;
-using SaveChangesMaybe.Core;
 using SaveChangesMaybe.DemoConsole.Models;
 using SaveChangesMaybe.Extensions;
 using Xunit;
@@ -8,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace SaveChangesMaybe.Tests
 {
-    public partial class DbSetTests
+    public class DbSetTests : TestBase
     {
         private readonly ITestOutputHelper _testOutputHelper;
 
@@ -55,7 +54,6 @@ namespace SaveChangesMaybe.Tests
 
                 Assert.Equal(0, DbContext.Courses.Count());
 
-                SaveChangesMaybeHelper.FlushCache();
             }
         }
 
@@ -95,7 +93,6 @@ namespace SaveChangesMaybe.Tests
 
                 Assert.Equal(addedCourses, DbContext.Courses.Count());
 
-                SaveChangesMaybeHelper.FlushCache();
             }
         }
 
@@ -136,7 +133,6 @@ namespace SaveChangesMaybe.Tests
 
                 Assert.Equal(100, DbContext.Courses.Count());
 
-                SaveChangesMaybeHelper.FlushCache();
             }
         }
     }

@@ -55,6 +55,14 @@ namespace SaveChangesMaybe.Core
             }
         }
 
+        public static void ClearBufferFromMemory()
+        {
+            lock (PadLock)
+            {
+                ChangedEntities.Clear();
+            }
+        }
+
         internal static Dictionary<string, List<ISaveChangesBuffer>> ChangedEntities { get; } = new();
 
         internal static readonly object PadLock = new();
