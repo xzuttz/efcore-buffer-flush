@@ -14,11 +14,25 @@ namespace SaveChangesMaybe.Core
             {
                 var allChanges = ChangedEntities.Values;
 
-                foreach (var value in allChanges)
+                foreach (var dbSetBuffer in allChanges)
                 {
-                    foreach (var saveChangesBuffer in value.ToArray()) // Because we are modifying the list, we need to create a copy with ToArray
+                    if (dbSetBuffer.Any())
                     {
-                        saveChangesBuffer.FlushChanges();
+                        foreach (var saveChangesBuffer in dbSetBuffer)
+                        {
+                            // This invokes a FutureAction for each buffer
+
+                            saveChangesBuffer.SaveChanges();
+                        }
+
+                        // Execute all future actions
+
+                        var firstBuffer = dbSetBuffer.FirstOrDefault();
+
+                        if (firstBuffer != null)
+                        {
+                            firstBuffer.DbContext.ExecuteFutureAction();
+                        }
                     }
                 }
 
@@ -45,9 +59,9 @@ namespace SaveChangesMaybe.Core
 
                 var buffer = new SaveChangesBuffer<T>
                 (
-                    wrapper.SaveChangesCallback, 
-                    wrapper.DbContext, 
-                    wrapper.Options, 
+                    wrapper.SaveChangesCallback,
+                    wrapper.DbContext,
+                    wrapper.Options,
                     wrapper.OperationType
                 );
 
@@ -66,7 +80,7 @@ namespace SaveChangesMaybe.Core
                 {
                     Log.Logger.Debug("Batch size exceeded");
 
-                    FlushDbSetBuffer(all);
+                    FlushDbSet(all);
                     ClearDbSetBufferMemory(entityTypeName);
                 }
             }
@@ -86,8 +100,23 @@ namespace SaveChangesMaybe.Core
 
                 if (!all.Any()) return;
 
-                FlushDbSetBuffer(all);
+                FlushDbSet(all);
                 ClearDbSetBufferMemory(entityTypeName);
+            }
+        }
+
+        internal static void SaveChanges<T>(SaveChangesBuffer<T> buffer) where T : class
+        {
+            Log.Logger.Debug($"Operation: {buffer.OperationType}");
+
+            if (buffer.Entities.Any())
+            {
+                var list = buffer.Entities;
+                buffer.SaveChangesCallback.Invoke(list);
+            }
+            else
+            {
+                Log.Logger.Debug("No entities to save");
             }
         }
 
@@ -104,7 +133,7 @@ namespace SaveChangesMaybe.Core
             }
         }
 
-        private static void FlushDbSetBuffer<T>(List<SaveChangesBuffer<T>> all) where T : class
+        private static void FlushDbSet<T>(List<SaveChangesBuffer<T>> all) where T : class
         {
             SaveChanges(all);
 
@@ -122,22 +151,13 @@ namespace SaveChangesMaybe.Core
             }
         }
 
-        private static void SaveChanges<T>(List<SaveChangesBuffer<T>> buffer) where T : class
+        private static void SaveChanges<T>(List<SaveChangesBuffer<T>> bufferList) where T : class
         {
-            foreach (var saveChangesBuffer in buffer)
+            foreach (var buffer in bufferList)
             {
-                Log.Logger.Debug($"Operation: {saveChangesBuffer.OperationType}");
-
-                if (saveChangesBuffer.Entities.Any())
-                {
-                    var list = saveChangesBuffer.Entities;
-                    saveChangesBuffer.SaveChangesCallback.Invoke(list);
-                }
-                else
-                {
-                    Log.Logger.Debug("No entities to save");
-                }
+                SaveChanges(buffer);
             }
         }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SaveChangesMaybe.Core;
+using System;
 using Z.BulkOperations;
 
 namespace SaveChangesMaybe.Models
@@ -20,14 +21,15 @@ namespace SaveChangesMaybe.Models
         public Action<BulkOperation<T>>? Options { get; set; }
         public SaveChangesMaybeOperationType OperationType { get; set; }
 
-        public void FlushChanges()
+        public void SaveChanges()
         {
-            SaveChangesMaybeHelper.FlushDbSet<T>();
+            SaveChangesMaybeHelper.SaveChanges(this);
         }
     }
 
     public interface ISaveChangesBuffer
     {
-        void FlushChanges();
+        void SaveChanges();
+        public DbContext DbContext { get; }
     }
 }
