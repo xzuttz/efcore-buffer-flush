@@ -5,6 +5,7 @@
         BulkMerge,
         BulkUpdate,
         BulkInsert,
-        BulkDelete
+        BulkDelete,
+        BulkSynchronize
     }
 }

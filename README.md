@@ -1,9 +1,9 @@
 # What is Entity Framework Buffer Flush 
-This is an extension to the [Entity Framework Plus (and Extensions) library](https://entityframework-plus.net/), which can buffer changes locally, before persisting them in the database.
+This is an extension to the [Entity Framework Extensions library](https://entityframework-extensions.net/), which can buffer changes locally, before persisting them in the database.
 Each bulk operation has a `Maybe` operation, which has a batch size parameter. Upon reaching the batch size, the library will flush the internal cache and persist the changes using Entity Framework Plus (and Extensions). 
 
 # When to use this library ?
-The Entity Framework Plus (and Extensions) library also supports batch sizes. It is, however, necessary to have the full batch when saving changes. 
+The Entity Framework Extensions library also supports batch sizes. It is, however, necessary to have the full batch when saving changes. 
 
 Occasionally, you may not be able to accumulate all changes at once. It might be a good idea to buffer up small changes and persist them in batches rather than persisting them all at once if you expect to save changes frequently. 
 
@@ -20,12 +20,13 @@ We have only tested the library in a single-threaded environment. If you have an
 
 # Supported operations
 
-| Operations          |
-| --------------------|
-|BulkMergeMaybe       |
-|BulkUpdateMaybe      |
-|BulkInsertMaybe      |
-|BulkDeleteMaybe      |
+| Operations               |
+| ------------------------ |
+|BulkMergeMaybe            |
+|BulkUpdateMaybe           |
+|BulkInsertMaybe           |
+|BulkDeleteMaybe           |
+|BulkSynchronizeMaybe      |
 
 # BulkMergeMaybe example
 A cache flush will be initiated when the internal buffer for the DbSet in question reaches the batch size specified.
