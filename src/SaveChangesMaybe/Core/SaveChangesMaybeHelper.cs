@@ -40,6 +40,21 @@ namespace SaveChangesMaybe.Core
             }
         }
 
+        public static void FlushDbSet<T>() where T : class
+        {
+            lock (PadLock)
+            {
+                var entityTypeName = typeof(T).ToString();
+
+                var all = GetChangedEntities(entityTypeName).Cast<SaveChangesBuffer<T>>().ToList();
+
+                if (!all.Any()) return;
+
+                FlushDbSet(all);
+                ClearDbSetBufferMemory(entityTypeName);
+            }
+        }
+
         internal static Dictionary<string, List<ISaveChangesBuffer>> ChangedEntities { get; } = new();
 
         internal static readonly object PadLock = new();
@@ -83,25 +98,6 @@ namespace SaveChangesMaybe.Core
                     FlushDbSet(all);
                     ClearDbSetBufferMemory(entityTypeName);
                 }
-            }
-        }
-
-        /// <summary>
-        /// Used by timers
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        internal static void FlushDbSet<T>() where T : class
-        {
-            lock (PadLock)
-            {
-                var entityTypeName = typeof(T).ToString();
-
-                var all = GetChangedEntities(entityTypeName).Cast<SaveChangesBuffer<T>>().ToList();
-
-                if (!all.Any()) return;
-
-                FlushDbSet(all);
-                ClearDbSetBufferMemory(entityTypeName);
             }
         }
 

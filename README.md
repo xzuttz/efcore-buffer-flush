@@ -52,6 +52,12 @@ public override async Task StopAsync(CancellationToken cancellationToken)
 }
 ```
 
+## Specific DbSet
+
+```c#
+SaveChangesMaybeHelper.FlushDbSet<Student>();
+```
+
 ## Fixed time interval
 
 The cache should be flushed every now and then. 
