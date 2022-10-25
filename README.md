@@ -28,6 +28,7 @@ We have only tested the library in a single-threaded environment. If you have an
 |BulkDeleteMaybe      |
 
 # BulkMergeMaybe example
+A cache flush will be initiated when the internal buffer for the DbSet in question reaches the batch size specified.
 
 ```c#
 _schoolCtx.Students.BulkMergeMaybe(students, 
