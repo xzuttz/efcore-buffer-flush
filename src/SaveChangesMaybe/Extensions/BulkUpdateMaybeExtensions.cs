@@ -11,8 +11,16 @@ namespace SaveChangesMaybe.Extensions
 
         // DbContext
 
-        public static async Task BulkUpdateMaybeAsync<T>(this DbContext dbContext, List<T> entities, int batchSize, CancellationToken cancellationToken,
-            Action<BulkOperation<T>>? options = null) where T : class
+        public static async Task BulkUpdateMaybeAsync<T>(this DbContext dbContext, List<T> entities, int batchSize, CancellationToken cancellationToken) where T : class
+        {
+            /// TODO: async all the way down
+            await Task.Run(() =>
+            {
+                BulkUpdateMaybe(dbContext, entities, batchSize, null);
+            }, cancellationToken).ConfigureAwait(false);
+        }
+
+        public static async Task BulkUpdateMaybeAsync<T>(this DbContext dbContext, List<T> entities, int batchSize, Action<BulkOperation<T>> options, CancellationToken cancellationToken) where T : class
         {
             /// TODO: async all the way down
             await Task.Run(() =>
@@ -43,7 +51,17 @@ namespace SaveChangesMaybe.Extensions
 
         // DbSet
 
-        public static async Task BulkUpdateMaybeAsync<T>(this DbSet<T> dbSet, List<T> entities, int batchSize, CancellationToken cancellationToken, Action<BulkOperation<T>>? options = null) where T : class
+        public static async Task BulkUpdateMaybeAsync<T>(this DbSet<T> dbSet, List<T> entities, int batchSize, CancellationToken cancellationToken) where T : class
+        {
+            /// TODO: async all the way down
+
+            await Task.Run(() =>
+            {
+                BulkUpdateMaybe<T>(dbSet, entities, batchSize, null);
+            }, cancellationToken).ConfigureAwait(false);
+        }
+
+        public static async Task BulkUpdateMaybeAsync<T>(this DbSet<T> dbSet, List<T> entities, int batchSize, Action<BulkOperation<T>> options, CancellationToken cancellationToken) where T : class
         {
             /// TODO: async all the way down
 
