@@ -95,6 +95,11 @@ namespace SaveChangesMaybe.Core
 
                 changedEntities.Add(buffer);
 
+                if (wrapper.BatchSize is null)
+                {
+                    return; // Only buffer up changes when the BatchSize is not set
+                }
+
                 var all = changedEntities.Cast<SaveChangesBuffer<T>>().ToList();
 
                 var changeCount = all.Sum(withOptions => withOptions.Entities.Count);
