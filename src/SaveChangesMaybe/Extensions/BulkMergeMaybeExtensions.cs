@@ -11,16 +11,7 @@ namespace SaveChangesMaybe.Extensions
 
         // DbContext
 
-        public static async Task BulkMergeMaybeAsync<T>(this DbContext dbContext, List<T> entities, int batchSize, CancellationToken cancellationToken) where T : class
-        {
-            /// TODO: async all the way down
-            await Task.Run(() =>
-            {
-                BulkMergeMaybe(dbContext, entities, batchSize, null);
-            }, cancellationToken).ConfigureAwait(false);
-        }
-
-        public static async Task BulkMergeMaybeAsync<T>(this DbContext dbContext, List<T> entities, int batchSize, Action<BulkOperation<T>> options, CancellationToken cancellationToken) where T : class
+        public static async Task BulkMergeMaybeAsync<T>(this DbContext dbContext, List<T> entities, int? batchSize = null, Action<BulkOperation<T>>? options = null, CancellationToken cancellationToken = default) where T : class
         {
             /// TODO: async all the way down
             await Task.Run(() =>
@@ -29,7 +20,7 @@ namespace SaveChangesMaybe.Extensions
             }, cancellationToken).ConfigureAwait(false);
         }
 
-        public static void BulkMergeMaybe<T>(this DbContext dbContext, List<T> entities, int batchSize, Action<BulkOperation<T>>? options = null) where T : class
+        public static void BulkMergeMaybe<T>(this DbContext dbContext, List<T> entities, int? batchSize = null, Action<BulkOperation<T>>? options = null) where T : class
         {
             var callback = new Action<List<object>>(list =>
             {
@@ -51,17 +42,7 @@ namespace SaveChangesMaybe.Extensions
 
         // DbSet
 
-        public static async Task BulkMergeMaybeAsync<T>(this DbSet<T> dbSet, List<T> entities, int batchSize, CancellationToken cancellationToken) where T : class
-        {
-            /// TODO: async all the way down
-
-            await Task.Run(() =>
-            {
-                BulkMergeMaybe(dbSet, entities, batchSize, null);
-            }, cancellationToken).ConfigureAwait(false);
-        }
-
-        public static async Task BulkMergeMaybeAsync<T>(this DbSet<T> dbSet, List<T> entities, int batchSize, Action<BulkOperation<T>> options, CancellationToken cancellationToken) where T : class
+        public static async Task BulkMergeMaybeAsync<T>(this DbSet<T> dbSet, List<T> entities, int? batchSize, Action<BulkOperation<T>>? options, CancellationToken cancellationToken = default) where T : class
         {
             /// TODO: async all the way down
 
@@ -71,7 +52,7 @@ namespace SaveChangesMaybe.Extensions
             }, cancellationToken).ConfigureAwait(false);
         }
 
-        public static void BulkMergeMaybe<T>(this DbSet<T> dbSet, List<T> entities, int batchSize, Action<BulkOperation<T>>? options = null) where T : class
+        public static void BulkMergeMaybe<T>(this DbSet<T> dbSet, List<T> entities, int? batchSize = null, Action<BulkOperation<T>>? options = null) where T : class
         {
             var dbContext = dbSet.GetService<ICurrentDbContext>().Context;
 
