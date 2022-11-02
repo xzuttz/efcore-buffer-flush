@@ -44,6 +44,10 @@ _schoolCtx.Students.BulkMergeMaybe(students,
 
 When to flush the cache and save all changes can be determined by your own logic.
 
+## Optional BatchSize
+
+The BatchSize parameter on the bulk operations is optional. Without it, changes will be buffered until one of the following methods flushes the cache.
+
 ## All DbSets stored in cache
 
 ```SaveChangesMaybeHelper.FlushCache()``` flushes all DbSets stored in the cache. 
