@@ -1,3 +1,10 @@
+# CircleCI
+
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/xzuttz/efcore-buffer-flush/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/xzuttz/efcore-buffer-flush/tree/main)
+
+# Disclaimer
+The library designed for applications that reuse the same DbContext over time. Usually a console application.
+
 # What is Entity Framework Buffer Flush 
 This is an extension to the [Entity Framework Extensions library](https://entityframework-extensions.net/), which can buffer changes locally, before persisting them in the database.
 Each bulk operation has a `Maybe` operation, which has a batch size parameter. Upon reaching the batch size, the library will flush the internal cache and persist the changes using Entity Framework Plus (and Extensions). 
@@ -13,10 +20,6 @@ If you are consuming messages from Kafka or another message broker, you may not 
 The `Maybe` operations in this library utilize an internal buffer to store entities, until the buffer reaches its limit or is flushed by the timer. All original functions of the ZZZ library do not use or flush the buffer, because they don't know about it. In the case of BulkMergeMaybe followed by BulkMerge, the entities from BulkMergeMaybe will not be considered. All of the functionality of the ZZZ library is reused in the `Maybe` operations. They act as wrappers, just with an internal buffer and logic for flushing it.
 
 We have only tested the library in a single-threaded environment. If you have an ASP.NET application that receives multiple concurrent requests, the shared buffer may not work as expected due to its static nature. Feel free to test it out and see if it meets your needs.
-
-# CircleCI
-
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/xzuttz/zzz-efplus-buffer-flush/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/xzuttz/zzz-efplus-buffer-flush/tree/main)
 
 # Supported operations
 
