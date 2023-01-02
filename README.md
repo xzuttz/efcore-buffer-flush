@@ -3,7 +3,7 @@
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/xzuttz/efcore-buffer-flush/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/xzuttz/efcore-buffer-flush/tree/main)
 
 # Disclaimer
-The library designed for applications that reuse the same DbContext over time. Usually a console application.
+The library designed for applications that reuse the same DbContext over time. Usually console applications.
 
 # What is Entity Framework Buffer Flush 
 This is an extension to the [Entity Framework Extensions library](https://entityframework-extensions.net/), which can buffer changes locally, before persisting them in the database.
